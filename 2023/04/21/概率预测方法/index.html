@@ -219,7 +219,7 @@
           <span class="text-gray-400">·</span>
           <span>2 min</span>
           <span class="text-gray-400">·</span>
-          <span>649 words</span>
+          <span>654 words</span>
         </section>
       </div>
     </div>
@@ -252,23 +252,25 @@ target="_blank" rel="noopener" href="https://www.sciencedirect.com/science/artic
 probabilistic forecasting of river water quality under data missing
 situation: Deep learning plus post-processing techniques</a>。</p>
 <h3 id="lstm高斯混合模型">2.2.2 LSTM+高斯混合模型</h3>
-<p>GMM以规定置信水平下的置信区间的形式为概率预测提供了不确定性量化。 1.
-每个GMM由k个高斯分布组成，每个高斯分布被称为一个分量。将这些分量线性相加，形成GMM概率密度函数：$p({x_i})
-= _{k = 1}^K { {<em>k}p({x_i}|k) = </em>{k = 1}^K {
-{_k}N({x_i}|{_k},{_k})} } <span
-class="math inline">\(，\)</span>{_k}$为权重。 2. EM算法： 1.
-初始化参数</p>
-<ol start="2" type="1">
+<p>GMM以规定置信水平下的置信区间的形式为概率预测提供了不确定性量化。</p>
+<ol type="1">
+<li><p>每个GMM由k个高斯分布组成，每个高斯分布被称为一个分量。将这些分量线性相加，形成GMM概率密度函数：<span
+class="math inline">\(p({x_i}) = \sum\limits_{k = 1}^K { {\pi
+_k}p({x_i}|k) = \sum\limits_{k = 1}^K { {\pi _k}N({x_i}|{\mu _k},{\Sigma
+_k})} }\)</span>，<span class="math inline">\({\pi
+_k}\)</span>为权重。</p></li>
+<li><p>EM算法：</p></li>
+<li><p>初始化参数</p></li>
 <li><p>计算后验概率（E-Step）：<span class="math inline">\({\varpi
 _i}(k) = \frac{ { {\pi _k}N({x_i}\left| { {u_k},} \right.{ {\rm{\Sigma }
 }_k})} } { {\mathop \sum \nolimits_{j = 1}^K {\pi _j}N({x_i}\left| {
 {u_j},} \right.{ {\rm{\Sigma } }_j})} }\)</span></p></li>
 <li><p>更新参数（M-Step）：<span class="math inline">\(\begin{array}
-{*{20} {c} } { {\pi _k} = \frac{ { {N_k} } } {N} }\\ { {u_k} = \frac{1}
-{ { {N_k} } }\mathop \sum \limits_{i = 1}^{ {N_k} } {\varpi _i}(k){x_i}
-}\\ { { {\rm{\Sigma } }_k} = \frac{1} { { {N_k} } }\mathop \sum
-\limits_{i = 1}^{ {N_k} } {\varpi _i}(k)({x_i} - {u_k}){ {({x_i} -
-{u_k})}^T} } \end{array}\)</span></p></li>
+{*{20} {c} }  { {\pi _k} = \frac{ { {N_k} } } {N} }\\  { {u_k} =
+\frac{1} { { {N_k} } }\mathop \sum \limits_{i = 1}^{ {N_k} } {\varpi
+_i}(k){x_i} }\\  { { {\rm{\Sigma } }_k} = \frac{1} { { {N_k} } }\mathop
+\sum \limits_{i = 1}^{ {N_k} } {\varpi _i}(k)({x_i} - {u_k}){ {({x_i} -
+{u_k})}^T} }  \end{array}\)</span></p></li>
 <li><p>迭代以上步骤，直至<span
 class="math inline">\(p({x_i})\)</span>收敛。</p></li>
 </ol>
