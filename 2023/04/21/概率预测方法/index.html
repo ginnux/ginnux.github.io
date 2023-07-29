@@ -261,15 +261,14 @@ class="math inline">\(，\)</span>{_k}$为权重。 2. EM算法： 1.
 <ol start="2" type="1">
 <li><p>计算后验概率（E-Step）：<span class="math inline">\({\varpi
 _i}(k) = \frac{ { {\pi _k}N({x_i}\left| { {u_k},} \right.{ {\rm{\Sigma }
-}_k})} }{ {\mathop \sum \nolimits_{j = 1}^K {\pi _j}N({x_i}\left| {
+}_k})} } { {\mathop \sum \nolimits_{j = 1}^K {\pi _j}N({x_i}\left| {
 {u_j},} \right.{ {\rm{\Sigma } }_j})} }\)</span></p></li>
-<li><p>更新参数（M-Step）：<span
-class="math inline">\(\begin{array}{*{20}{c} } { {\pi _k} = \frac{ {
-{N_k} } }{N} }\\ { {u_k} = \frac{1}{ { {N_k} } }\mathop \sum \limits_{i
-= 1}^{ {N_k} } {\varpi _i}(k){x_i} }\\ { { {\rm{\Sigma } }_k} =
-\frac{1}{ { {N_k} } }\mathop \sum \limits_{i = 1}^{ {N_k} } {\varpi
-_i}(k)({x_i} - {u_k}){ {({x_i} - {u_k})}^T} }
-\end{array}\)</span></p></li>
+<li><p>更新参数（M-Step）：<span class="math inline">\(\begin{array}
+{*{20} {c} } { {\pi _k} = \frac{ { {N_k} } } {N} }\\ { {u_k} = \frac{1}
+{ { {N_k} } }\mathop \sum \limits_{i = 1}^{ {N_k} } {\varpi _i}(k){x_i}
+}\\ { { {\rm{\Sigma } }_k} = \frac{1} { { {N_k} } }\mathop \sum
+\limits_{i = 1}^{ {N_k} } {\varpi _i}(k)({x_i} - {u_k}){ {({x_i} -
+{u_k})}^T} } \end{array}\)</span></p></li>
 <li><p>迭代以上步骤，直至<span
 class="math inline">\(p({x_i})\)</span>收敛。</p></li>
 </ol>
