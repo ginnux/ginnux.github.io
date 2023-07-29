@@ -1,49 +1,511 @@
-<!DOCTYPE html><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><meta name="theme-color" content="#2d4356"><meta name="baidu-site-verification"><title>boost | Hexo</title><link rel="stylesheet" type="text/css" href="/css/style.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.png"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script><meta name="generator" content="Hexo 6.3.0"></head><link rel="stylesheet" type="text/css" href="/plugins/highlight/atom-one-dark.min.css"><script type="text/javascript" src="/plugins/highlight/highlight.min.js"></script><script>hljs.initHighlightingOnLoad();
-</script><script type="text/javascript" src="/js/ready.js" async></script><link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css"><body class="night"><div class="mobile-head" id="mobile-head"><div class="navbar-icon"><span></span><span></span><span></span></div><div class="navbar-title"><a href="/">LITREILY</a></div><div class="navbar-search"><!--= show a circle here--></div></div><div class="h-wrapper" id="menu"><nav class="h-head box"><div class="m-hdimg"><a class="hdimg img" href="/"><img class="nofancybox" src="/img/profile.jpg" width="128" height="128"></a><h1 class="ttl"><a href="/">Hexo</a></h1></div><p class="m-desc">心之所向，无惧无悔,<br>愿求仁得仁，复无怨怼！</p><div class="m-nav"><ul><li><span class="dot">●</span><a href="/archives/">归档</a></li><li><span class="dot">●</span><a href="/categories/">分类</a></li><li><span class="dot">●</span><a href="/tags/">标签</a></li><li><span class="dot">●</span><a href="/about/">关于</a></li><li><span class="dot">●</span><a href="/atom.xml">RSS</a></li><li class="m-sch"><form class="form" id="j-formsch" method="get"><input class="txt" type="text" id="local-search-input" name="q" value="搜索" onfocus="if(this.value=='搜索'){this.value='';}" onblur="if(this.value==''){this.value='搜索';}"><input type="text" style="display:none;"></form></li></ul><div id="local-search-result"></div></div></nav></div><div id="back2Top"><a class="fa fa-arrow-up" title="Back to top" href="#"></a></div><div class="box" id="container"><div class="l-wrapper"><div class="l-content box"><div class="l-post l-post-art"><article class="p-art"><div class="p-header box"><h1 class="p-title">boost</h1><div class="p-info"><span class="p-date"><i class="fa fa-calendar"></i><a href="/2023/07/29/boost/">2023-07-29</a></span><span class="p-view" id="busuanzi_container_page_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_page_pv"></span></span></div></div><div class="p-content"><h1 id="梯度增强笔记"><a href="#梯度增强笔记" class="headerlink" title="梯度增强笔记"></a>梯度增强笔记</h1><h2 id="1-集成模型"><a href="#1-集成模型" class="headerlink" title="1 集成模型"></a>1 集成模型</h2><p>集成模型（Ensemble Model）不是一种具体的模型，而是一种模型框架，将若干个模型(弱学习器)按照一定的策略组合起来，共同完成一个任务。</p>
-<h3 id="1-1-bagging模型"><a href="#1-1-bagging模型" class="headerlink" title="1.1 bagging模型"></a>1.1 bagging模型</h3><p>bagging模型会把(相同的)若干基础模型简单的“装起来”——基础模型独立训练，然后将它们的输出用特定的规则综合(比如求平均值)起来，形成最后的预测值。在回归任务中，通常认为基础模型分布在真实值周围，将输出平均一下，即得到一个稳定的预测值。（随机森林）<br><img src="https://pic3.zhimg.com/80/v2-4b31a06b0f7168503443e67d98cfde4e_720w.webp" alt="bagging"></p>
-<h3 id="1-2-stacking模型"><a href="#1-2-stacking模型" class="headerlink" title="1.2 stacking模型"></a>1.2 stacking模型</h3><p>stacking模型是bagging模型的增强版，允许使用不同的基础模型通过不同权重进行决策。<br><img src="https://pic4.zhimg.com/80/v2-60109736ab4331374e4307a625d67c7b_720w.webp" alt="stacking"></p>
-<h3 id="1-3-boosting模型"><a href="#1-3-boosting模型" class="headerlink" title="1.3 boosting模型"></a>1.3 boosting模型</h3><p>boosting模型是通过串联形式将基础模型联系起来，每一级基础模型会对前级模型的残差，即弱学习器不完美的部分补全，最终不断缩小残差，达到优良的拟合效果。<br><img src="https://pic3.zhimg.com/80/v2-b8efd3f521896f4387ca49c03fdc94f6_720w.webp" alt="boosting"></p>
-<h2 id="2-回归任务的梯度增强"><a href="#2-回归任务的梯度增强" class="headerlink" title="2 回归任务的梯度增强"></a>2 回归任务的梯度增强</h2><h3 id="2-1-简介"><a href="#2-1-简介" class="headerlink" title="2.1 简介"></a>2.1 简介</h3><p>以数据集<script type="math/tex">{\rm{D} } = [({X_1},{y_1}),({X_2},{y_2}),...,({X_n},{y_n})]</script>，为例。拟合${y_n} = f({X_n})$,降低误差，实现预测。<br>设第$k$级的决策树为${T_k}({X_n})$，这一级的决策树是弥补上一级决策树的残差，即训练：${\hat \varepsilon _{k - 1} } = {T_k}({x_n}) + {\varepsilon _k}$。<br>根据该递归公式求和，最后一级残差忽略不计，可知，最终的预测模型为：${\hat y_n} = \sum\limits_{i = 1}^k { {T_i}({x_n})} $。</p>
-<h3 id="2-2-训练方法"><a href="#2-2-训练方法" class="headerlink" title="2.2 训练方法"></a>2.2 训练方法</h3><p>在训练第k个决策树的时候，我们需要最小化这样一个loss函数：<br>$J = \sum\limits_{i = 1}^n {L({y_i},{f_k}({x_i}))} $，而${f_k}({x_i}) = {f_{k - 1} }({x_i}) + {T_k}({x_i})$，通过更新${f_k}({x_i})$，使损失函数最小化。<br>即每次学习：${f_k}({x_i}) = {f_{k - 1} }({x_i}) - \alpha  \times \frac{ {\partial J} } { {\partial {f_{k - 1} } } }$($\alpha$为学习率)。<br>得到$k$级决策树：${T_k}({x_n}) =  - \alpha  \times \frac{ {\partial J} } { {\partial {f_{k - 1} } } }$。<br>采用残差平方和$J = \sum\limits_{i = 1}^N {\frac{1}{2} { {({y_i} - {f_k}({x_i}))}^2} } $作为损失函数，可以得到第$k$级决策树是拟合前级决策树的残差。得到：${T_k}({x_n}) =  - \alpha  \times \frac{ {\partial J} }{ {\partial {f_{k - 1} }} } = \alpha ({y_n} - {f_{k - 1} }({x_n}))$。</p>
-<h2 id="3-梯度增强实现"><a href="#3-梯度增强实现" class="headerlink" title="3 梯度增强实现"></a>3 梯度增强实现</h2><h3 id="3-1-训练"><a href="#3-1-训练" class="headerlink" title="3.1 训练"></a>3.1 训练</h3><p>在训练每一个决策树时，需要逐级训练，训练速度较慢。</p>
-<h3 id="3-2-预测"><a href="#3-2-预测" class="headerlink" title="3.2 预测"></a>3.2 预测</h3><p>预测时，每个决策树可以单独计算，可以通过并行计算提升速度。</p>
-<h2 id="4-示例代码"><a href="#4-示例代码" class="headerlink" title="4 示例代码"></a>4 示例代码</h2><p>摘自<a target="_blank" rel="noopener" href="https://github.com/lipengyuer/DataScience/blob/master/src/algoritm/GBDTRegression.py">GBDTRegression</a>。</p>
-</div><div class="p-copyright"><blockquote><div class="p-copyright-author"><span class="p-copyright-key">本文作者：</span><span class="p-copytight-value"><a href="mailto:litreily@163.com">John Doe</a></span></div><div class="p-copyright-link"><span class="p-copyright-key">本文链接：</span><span class="p-copytight-value"><a href="/2023/07/29/boost/">http://example.com/2023/07/29/boost/</a></span></div><div class="p-copyright-note"><span class="p-copyright-key">版权声明：</span><span class="p-copytight-value">本博客所有文章除特殊声明外，均采用<a rel="nofollow" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/"> CC BY-NC 4.0 </a>许可协议。转载请注明出处 <a href="http://example.com">John Doe的博客</a>！</span></div></blockquote></div></article><div class="p-info box"></div><aside id="toc"><div class="toc-title">目录</div><nav><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A2%AF%E5%BA%A6%E5%A2%9E%E5%BC%BA%E7%AC%94%E8%AE%B0"><span class="toc-number">1.</span> <span class="toc-text">梯度增强笔记</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%9B%86%E6%88%90%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.1.</span> <span class="toc-text">1 集成模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-bagging%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.1 bagging模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-stacking%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.1.2.</span> <span class="toc-text">1.2 stacking模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-boosting%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.1.3.</span> <span class="toc-text">1.3 boosting模型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%9B%9E%E5%BD%92%E4%BB%BB%E5%8A%A1%E7%9A%84%E6%A2%AF%E5%BA%A6%E5%A2%9E%E5%BC%BA"><span class="toc-number">1.2.</span> <span class="toc-text">2 回归任务的梯度增强</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E7%AE%80%E4%BB%8B"><span class="toc-number">1.2.1.</span> <span class="toc-text">2.1 简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E8%AE%AD%E7%BB%83%E6%96%B9%E6%B3%95"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.2 训练方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%A2%AF%E5%BA%A6%E5%A2%9E%E5%BC%BA%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.3.</span> <span class="toc-text">3 梯度增强实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E8%AE%AD%E7%BB%83"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1 训练</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E9%A2%84%E6%B5%8B"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2 预测</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="toc-number">1.4.</span> <span class="toc-text">4 示例代码</span></a></li></ol></li></ol></nav></aside></div><section class="p-ext"><div class="l-pager l-pager-dtl box"><a class="next" href="/2023/07/28/root/"> &gt;</a></div><div id="valine-comment"><style type="text/css">.night .v[data-class=v] a { color: #0F9FB4 !important; }
-.night .v[data-class=v] a:hover { color: #216C73 !important; }
-.night .v[data-class=v] li { list-style: inherit; }
-.night .v[data-class=v] .vwrap { border: 1px solid #223441; border-radius: 0; }
-.night .v[data-class=v] .vwrap:hover { box-shadow: 0 0 6px 1px #223441; }
-.night .v[data-class=v] .vbtn { border-radius: 0; background: none; }
-.night .v[data-class=v] .vlist .vcard .vh { border-bottom-color: #293D4E; }
-.night .v[data-class=v] .vwrap .vheader .vinput { border-bottom-color: #223441; }
-.night .v[data-class=v] .vwrap .vheader .vinput:focus { border-bottom-color: #339EB4; }
-.night .v[data-class=v] code, .night .v[data-class=v] pre,.night .v[data-class=v] .vlist .vcard .vhead .vsys { background: #203240 !important; }
-.night .v[data-class=v] code, .night .v[data-class=v] pre { color: #F0F0F0; font-size: 95%; }
-.v[data-class=v] .vcards .vcard .vh {border-bottom-color: #223441; }
-.night .v[data-class=v] .vcards .vcard .vcontent.expand:before {background: linear-gradient(180deg,rgba(38,57,73,.4),rgba(38,57,73,.9));}
-.night .v[data-class=v] .vcards .vcard .vcontent.expand:after {background: rgba(38,57,73,.9)}
-</style><div id="vcomment"></div><script src="//cdn.bootcdn.net/ajax/libs/valine/1.4.14/Valine.min.js"></script><script>var notify = 'false' == true ? true : false;
-var verify = 'false' == true ? true : false;
-var GUEST_INFO = ['nick','mail','link'];
-var guest_info = 'nick,mail,link'.split(',').filter(function(item){
-  return GUEST_INFO.indexOf(item) > -1
-});
-guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
-window.valine = new Valine({
-  el:'#vcomment',
-  notify:notify,
-  verify:verify,
-  appId:'',
-  appKey:'',
-  lang: 'zh-cn',
-  placeholder:'ヾﾉ≧∀≦)o Come on, say something...',
-  avatar:'identicon',
-  guest_info:guest_info,
-  pageSize:'10'
-})</script></div></section><footer><p>Copyright © 2016 - 2023 <a href="/." rel="nofollow">Hexo</a> | <strong><a rel="nofollow" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></strong><br><span id="busuanzi_container_site_uv"><i class="fa fa-user"></i><span id="busuanzi_value_site_uv"></span></span> <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_site_pv"></span></span> | Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a>Theme with<a rel="nofollow" target="_blank" href="https://github.com/litreily/snark-hexo"> snark.</a></p></footer></div></div></div><script type="text/javascript" src="/js/search.js"></script><script type="text/javascript" src="/js/top.js"></script><script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><script>var search_path = 'search.xml';
-if (search_path.length == 0) {
-    search_path = 'search.xml';
-}
-var path = '/' + search_path;
-searchFunc(path, 'local-search-input', 'local-search-result');
-</script><script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.1" async></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <meta name="author" content="John Doe">
+
+
+
+
+
+<title>boost | Hexo</title>
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/nprogress/nprogress.css">
+
+
+
+<script src="/lib/jquery.min.js"></script>
+
+
+<script src="/lib/iconify-icon.min.js"></script>
+
+
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+  };
+</script>
+
+
+<script src="/lib/nprogress/nprogress.js"></script>
+
+<script>
+  $(document).ready(() => {
+    NProgress.configure({
+      showSpinner: false,
+    });
+    NProgress.start();
+    $("#nprogress .bar").css({
+      background: "#de7441",
+    });
+    $("#nprogress .peg").css({
+      "box-shadow": "0 0 2px #de7441, 0 0 4px #de7441",
+    });
+    $("#nprogress .spinner-icon").css({
+      "border-top-color": "#de7441",
+      "border-left-color": "#de7441",
+    });
+    setTimeout(function () {
+      NProgress.done();
+      $(".fade").removeClass("out");
+    }, 800);
+  });
+</script>
+
+<script>
+  (function () {
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+    if (setting === "dark" || (prefersDark && setting !== "light"))
+      document.documentElement.classList.toggle("dark", true);
+    let isDark = document.documentElement.classList.contains("dark");
+  })();
+
+  $(document).ready(function () {
+    // init icon
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDark = document.documentElement.classList.contains("dark");
+    $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+
+    function toggleGiscusTheme() {
+      const isDark = document.documentElement.classList.contains("dark");
+      const giscusFrame = document.querySelector("iframe.giscus-frame");
+      if (giscusFrame) {
+        giscusFrame.contentWindow.postMessage(
+          {
+            giscus: {
+              setConfig: {
+                theme: isDark ? "dark" : "light",
+              },
+            },
+          },
+          "https://giscus.app"
+        );
+      }
+    }
+
+
+    // toggle dark mode
+    function toggleDark() {
+      let isDark = document.documentElement.classList.contains("dark");
+      isDark = !isDark;
+      const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+      document.documentElement.classList.toggle("dark", isDark);
+      $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+      if (prefersDark === isDark) {
+        localStorage.setItem("hexo-color-scheme", "auto");
+      } else {
+        localStorage.setItem("hexo-color-scheme", isDark ? "dark" : "light");
+      }
+      toggleGiscusTheme();
+    }
+    $("#toggle-dark").click(toggleDark);
+    // listen dark mode change
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+        if (setting === "auto") {
+          document.documentElement.classList.toggle("dark", e.matches);
+          $("#theme-icon").attr(
+            "icon",
+            e.matches ? "ri:moon-line" : "ri:sun-line"
+          );
+          toggleGiscusTheme();
+        }
+      });
+  });
+</script>
+
+
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class="font-sans bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-200">
+  <header class="fixed w-full px-5 py-1 z-10 backdrop-blur-xl backdrop-saturate-150 border-b border-black/5">
+  <div class="max-auto">
+    <nav class="flex items-center text-base">
+      <a href="/" class="group">
+        <h2 class="font-medium tracking-tighterp text-l p-2">
+          <img class="w-5 mr-2 inline-block transition-transform group-hover:rotate-[30deg]" id="logo" src="/images/logo.svg" alt="Hexo" />
+          Hexo
+        </h2>
+      </a>
+      <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
+        boost
+      </div>
+      <div class="flex-1"></div>
+      <div class="flex items-center gap-3">
+        
+          <a class="hidden sm:flex" href="/archives">Posts</a>
+        
+          <a class="hidden sm:flex" href="/category">Categories</a>
+        
+          <a class="hidden sm:flex" href="/tag">Tags</a>
+        
+        
+          
+            <a class="w-5 h-5 hidden sm:flex" title="Github" target="_blank" rel="noopener" href="https://github.com/xbmlz">
+              <iconify-icon width="20" icon="ri:github-line"></iconify-icon>
+            </a>
+          
+        
+        <a class="w-5 h-5" title="toggle theme" id="toggle-dark">
+          <iconify-icon width="20" icon="" id="theme-icon"></iconify-icon>
+        </a>
+      </div>
+      <div class="flex items-center justify-center gap-3 ml-3 sm:hidden">
+        <span class="w-5 h-5" aria-hidden="true" role="img" id="open-menu">
+          <iconify-icon width="20" icon="carbon:menu" ></iconify-icon>
+        </span>
+        <span class="w-5 h-5 hidden" aria-hidden="true" role="img" id="close-menu">
+          <iconify-icon  width="20" icon="carbon:close" ></iconify-icon>
+        </span>
+      </div>
+    </nav>
+  </div>
+</header>
+<div id="menu-panel" class="h-0 overflow-hidden sm:hidden fixed left-0 right-0 top-12 bottom-0 z-10">
+  <div id="menu-content" class="relative z-20 bg-white/80 px-6 sm:px-8 py-2 backdrop-blur-xl -translate-y-full transition-transform duration-300">
+    <ul class="nav flex flex-col sm:flex-row text-sm font-medium">
+      
+        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
+          <a href="/archives" class="flex h-12 sm:h-auto items-center">Posts</a>
+        </li>
+      
+        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
+          <a href="/category" class="flex h-12 sm:h-auto items-center">Categories</a>
+        </li>
+      
+        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
+          <a href="/tag" class="flex h-12 sm:h-auto items-center">Tags</a>
+        </li>
+      
+    </ul>
+  </div>
+  <div class="mask bg-black/20 absolute inset-0"></div>
+</div>
+
+  <main class="p-12">
+    <!-- css -->
+
+<link rel="stylesheet" href="/lib/fancybox/fancybox.min.css">
+
+
+<link rel="stylesheet" href="/lib/tocbot/tocbot.min.css">
+
+<!-- toc -->
+
+  <!-- tocbot -->
+<nav class="post-toc toc text-sm w-48 relative top-32 right-0 opacity-70 hidden lg:block" style="position: fixed !important;"></nav>
+
+
+<section class="px-6 max-w-prose mx-auto md:px-0">
+  <!-- header -->
+  <header class="overflow-hidden pt-6 pb-6 md:pt-12">
+    <div class="pt-4 md:pt-6">
+      <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
+        boost
+      </h1>
+      <p class="mb-6">
+        
+      </p>
+      <div>
+        <section class="flex items-center gap-3 text-sm">
+          <time>2023-07-29 13:46:30</time>
+          <span class="text-gray-400">·</span>
+          <span>2 min</span>
+          <span class="text-gray-400">·</span>
+          <span>643 words</span>
+        </section>
+      </div>
+    </div>
+  </header>
+  <!-- content -->
+  <article class="post-content mt-10 prose dark:prose-invert post-content">
+    <h1 id="梯度增强笔记">梯度增强笔记</h1>
+<h2 id="集成模型">1 集成模型</h2>
+<p>集成模型（Ensemble
+Model）不是一种具体的模型，而是一种模型框架，将若干个模型(弱学习器)按照一定的策略组合起来，共同完成一个任务。</p>
+<h3 id="bagging模型">1.1 bagging模型</h3>
+<p>bagging模型会把(相同的)若干基础模型简单的“装起来”——基础模型独立训练，然后将它们的输出用特定的规则综合(比如求平均值)起来，形成最后的预测值。在回归任务中，通常认为基础模型分布在真实值周围，将输出平均一下，即得到一个稳定的预测值。（随机森林）
+<img
+src="https://pic3.zhimg.com/80/v2-4b31a06b0f7168503443e67d98cfde4e_720w.webp"
+alt="bagging" /></p>
+<h3 id="stacking模型">1.2 stacking模型</h3>
+<p>stacking模型是bagging模型的增强版，允许使用不同的基础模型通过不同权重进行决策。
+<img
+src="https://pic4.zhimg.com/80/v2-60109736ab4331374e4307a625d67c7b_720w.webp"
+alt="stacking" /></p>
+<h3 id="boosting模型">1.3 boosting模型</h3>
+<p>boosting模型是通过串联形式将基础模型联系起来，每一级基础模型会对前级模型的残差，即弱学习器不完美的部分补全，最终不断缩小残差，达到优良的拟合效果。
+<img
+src="https://pic3.zhimg.com/80/v2-b8efd3f521896f4387ca49c03fdc94f6_720w.webp"
+alt="boosting" /></p>
+<h2 id="回归任务的梯度增强">2 回归任务的梯度增强</h2>
+<h3 id="简介">2.1 简介</h3>
+<p>以数据集<span class="math inline">\({\rm{D} } =
+[({X_1},{y_1}),({X_2},{y_2}),...,({X_n},{y_n})]\)</span>，为例。拟合<span
+class="math inline">\({y_n} = f({X_n})\)</span>,降低误差，实现预测。
+设第<span class="math inline">\(k\)</span>级的决策树为<span
+class="math inline">\({T_k}({X_n})\)</span>，这一级的决策树是弥补上一级决策树的残差，即训练：<span
+class="math inline">\({\hat \varepsilon _{k - 1} } = {T_k}({x_n}) +
+{\varepsilon _k}\)</span>。
+根据该递归公式求和，最后一级残差忽略不计，可知，最终的预测模型为：${y_n}
+= _{i = 1}^k { {T_i}({x_n})} $。</p>
+<h3 id="训练方法">2.2 训练方法</h3>
+<p>在训练第k个决策树的时候，我们需要最小化这样一个loss函数： <span
+class="math inline">\(J = \sum \limits _{i = 1}^n {L({y_i},{f_k}({x_i} )
+) }\)</span>，而<span class="math inline">\({f_k}({x_i}) = {f_{k - 1}
+}({x_i}) + {T_k}({x_i})\)</span>，通过更新<span
+class="math inline">\({f_k}({x_i})\)</span>，使损失函数最小化。
+即每次学习：<span class="math inline">\({f_k}({x_i}) = {f_{k - 1}
+}({x_i}) - \alpha \times \frac{ {\partial J} } { {\partial {f_{k - 1} }
+} }\)</span>(<span class="math inline">\(\alpha\)</span>为学习率)。
+得到<span class="math inline">\(k\)</span>级决策树：<span
+class="math inline">\({T_k}({x_n}) = - \alpha \times \frac{ {\partial J}
+} { {\partial {f_{k - 1} } } }\)</span>。 采用残差平方和<span
+class="math inline">\(J = \sum\limits_{i = 1}^N {\frac{1}{2} { {({y_i} -
+{f_k}({x_i}))}^2} }\)</span>作为损失函数，可以得到第<span
+class="math inline">\(k\)</span>级决策树是拟合前级决策树的残差。得到：<span
+class="math inline">\({T_k}({x_n}) = - \alpha \times \frac{ {\partial J}
+}{ {\partial {f_{k - 1} }} } = \alpha ({y_n} - {f_{k - 1}
+}({x_n}))\)</span>。</p>
+<h2 id="梯度增强实现">3 梯度增强实现</h2>
+<h3 id="训练">3.1 训练</h3>
+<p>在训练每一个决策树时，需要逐级训练，训练速度较慢。</p>
+<h3 id="预测">3.2 预测</h3>
+<p>预测时，每个决策树可以单独计算，可以通过并行计算提升速度。</p>
+<h2 id="示例代码">4 示例代码</h2>
+<p>摘自<a
+target="_blank" rel="noopener" href="https://github.com/lipengyuer/DataScience/blob/master/src/algoritm/GBDTRegression.py">GBDTRegression</a>。</p>
+
+  </article>
+  <!-- tag -->
+  <div class="mt-12 pt-6 border-t border-gray-200">
+    
+  </div>
+  <!-- prev and next -->
+  <div class="flex justify-between mt-12 pt-6 border-t border-gray-200">
+    <div>
+      
+    </div>
+    <div>
+      
+        <a href="/2023/07/28/root/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          
+          <iconify-icon width="20" icon="ri:arrow-right-s-line" data-inline="false"></iconify-icon>
+        </a>
+      
+    </div>
+  </div>
+  <!-- comment -->
+  <div class="article-comments mt-12">
+    
+
+  </div>
+</section>
+<!-- js inspect -->
+
+<script src="/lib/clipboard.min.js"></script>
+
+
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+  });
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+  $(document).ready(() => {
+    const maraidConfig = {
+      theme: "dark",
+      logLevel: 3,
+      flowchart: { curve: "linear" },
+      gantt: { axisFormat: "%m/%d/%Y" },
+      sequence: { actorMargin: 50 },
+    };
+    mermaid.initialize(maraidConfig);
+  });
+</script>
+
+
+
+<script src="/lib/fancybox/fancybox.umd.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+    $('.post-content').each(function(i){
+      $(this).find('img').each(function(){
+        if ($(this).parent().hasClass('fancybox') || $(this).parent().is('a')) return;
+        var alt = this.alt;
+        if (alt) $(this).after('<span class="fancybox-alt">' + alt + '</span>');
+        $(this).wrap('<a class="fancybox-img" href="' + this.src + '" data-fancybox=\"gallery\" data-caption="' + alt + '"></a>')
+      });
+      $(this).find('.fancybox').each(function(){
+        $(this).attr('rel', 'article' + i);
+      });
+    });
+
+    Fancybox.bind('[data-fancybox="gallery"]', {
+        // options
+    })
+  })
+</script>
+
+<!-- tocbot begin -->
+
+<script src="/lib/tocbot/tocbot.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+      tocbot.init({
+        // Where to render the table of contents.
+        tocSelector: '.post-toc',
+        // Where to grab the headings to build the table of contents.
+        contentSelector: '.post-content',
+        // Which headings to grab inside of the contentSelector element.
+        headingSelector: 'h1, h2, h3',
+        // For headings inside relative or absolute positioned containers within content.
+        hasInnerContainers: true,
+    });
+  })
+</script>
+<!-- tocbot end -->
+
+
+  </main>
+  <footer class="flex flex-col h-40 items-center justify-center text-gray-400 text-sm">
+  <!-- busuanzi -->
+  
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- Busuanzi Analytics -->
+<div class="flex items-center gap-2">
+  <span>Visitor Count</span>
+  <span id="busuanzi_value_site_uv"></span>
+  <span>Totalview</span>
+  <span id="busuanzi_value_site_pv"></span>
+</div>
+<!-- End Busuanzi Analytics -->
+
+
+  <!-- copyright -->
+  <div class="flex items-center gap-2">
+    <span>© 2022</span>
+    <iconify-icon width="18" icon="emojione-monotone:maple-leaf" ></iconify-icon>
+    <a href="https://github.com/xbmlz" target="_blank" rel="noopener noreferrer">xbmlz</a>
+  </div>
+  <!-- powered by -->
+  <div class="flex items-center gap-2">
+    <span>Powered by</span>
+    <a href="https://hexo.io/" target="_blank" rel="noopener noreferrer">Hexo</a>
+    <span>&</span>
+    <a href="https://github.com/xbmlz/hexo-theme-maple" target="_blank" rel="noopener noreferrer">Maple</a>
+  </div>
+
+</footer>
+
+  <iconify-icon class="fixed right-4 bottom-10 z-100 opacity-0" width="24" icon="ion:arrow-up-c" id="go-top"></iconify-icon>
+  
+<script src="/js/main.js"></script>
+
+
+  <script>
+    $(document).ready(function () {
+      const mapleCount = "10";
+      const speed = "0.5";
+      const mapleEl = document.getElementById("maple");
+      const maples = Array.from({ length: mapleCount }).map(() => {
+        const maple = document.createElement("div");
+        const scale = Math.random() * 0.5 + 0.5;
+        const offset = Math.random() * 2 - 1;
+        const x = Math.random() * mapleEl.clientWidth;
+        const y = -Math.random() * mapleEl.clientHeight;
+        const duration = 10 / speed;
+        const delay = -duration;
+        maple.className = "maple";
+        maple.style.width = `${24 * scale}px`;
+        maple.style.height = `${24 * scale}px`;
+        maple.style.left = `${x}px`;
+        maple.style.top = `${y}px`;
+        maple.style.setProperty("--maple-fall-offset", offset);
+        maple.style.setProperty("--maple-fall-height", `${Math.abs(y) + mapleEl.clientHeight}px`);
+        maple.style.animation = `fall ${duration}s linear infinite`;
+        maple.style.animationDelay = `${delay}s`;
+        mapleEl.appendChild(maple)
+        return maple
+      })
+    });
+  </script>
+  
+
+
+  <div class="w-screen h-screen -z-999" id="maple"></div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+
+</html>
