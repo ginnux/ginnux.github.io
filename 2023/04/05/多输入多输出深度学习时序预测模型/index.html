@@ -15,7 +15,7 @@
 
 
 
-<title>Archives: 2023 | Gin&#39;s Blog</title>
+<title>多输入多输出深度学习时序预测模型 | Gin&#39;s Blog</title>
 
 
 
@@ -153,7 +153,7 @@
         </h2>
       </a>
       <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
-        
+        多输入多输出深度学习时序预测模型
       </div>
       <div class="flex-1"></div>
       <div class="flex items-center gap-3">
@@ -190,182 +190,229 @@
 </div>
 
   <main class="p-12">
-    <section class="px-6 max-w-prose mx-auto gap-12 grid grid-cols-1">
-  <div class="flex flex-col h-48 items-center justify-center">
-    <h1 class="site-title text-4xl leading-relaxed">
-      Gin&#39;s Blog
-    </h1>
-    <p class="text-gray-500 mt-2">
-      
-    </p>
-  </div>
-  
-  
-    
-    
-      <div class="relative pointer-events-none">
-        <span class="text-9xl opacity-10 absolute -left-11 -top-6 font-bold">2023</span>
+    <!-- css -->
+
+<link rel="stylesheet" href="/lib/fancybox/fancybox.min.css">
+
+
+<link rel="stylesheet" href="/lib/tocbot/tocbot.min.css">
+
+<!-- toc -->
+
+  <!-- tocbot -->
+<nav class="post-toc toc text-sm w-48 relative top-32 right-0 opacity-70 hidden lg:block" style="position: fixed !important;"></nav>
+
+
+<section class="px-6 max-w-prose mx-auto md:px-0">
+  <!-- header -->
+  <header class="overflow-hidden pt-6 pb-6 md:pt-12">
+    <div class="pt-4 md:pt-6">
+      <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
+        多输入多输出深度学习时序预测模型
+      </h1>
+      <p class="mb-6">
+        
+      </p>
+      <div>
+        <section class="flex items-center gap-3 text-sm">
+          <time>2023-04-05 18:38:26</time>
+          <span class="text-gray-400">·</span>
+          <span>2 min</span>
+          <span class="text-gray-400">·</span>
+          <span>641 words</span>
+        </section>
       </div>
+    </div>
+  </header>
+  <!-- content -->
+  <article class="post-content mt-10 prose dark:prose-invert post-content">
+    <h1 id="常见时序预测分类">1 常见时序预测分类</h1>
+<blockquote>
+<p>Broadly, these techniques can be grouped into three major groups:
+statistical methods, traditional machine learning-based methods, and
+deep learning-based methods.</p>
+</blockquote>
+<p>时序预测通常可以有三种方法：即统计学方法、传统机器学习、深度学习。</p>
+<ul>
+<li><p>统计学方法是根据现有数据拟合函数。</p></li>
+<li><p>传统机器学习即例如高斯过程、回归树等方法。</p></li>
+<li><p>深度学习可以自动的建立映射关系，包括CNN，RNN，LSTM。</p></li>
+</ul>
+<h1 id="多步预测策略">2 多步预测策略</h1>
+<p>多步预测可分为四种方法，递归预测、直接预测、递归直接预测、多输入多输出预测。
+- 递归预测：<span class="math inline">\({y_{t + H} } = {F_{ {\rm{Rec} }
+} }({y_{t + H - 1} },{y_{t + H - 2} },...,{y_{t + H - N}
+})\)</span>。用前N步的数据预测下一步，类似<a
+href="./循环神经网络笔记.ipynb">RNN学习笔记</a>中的处理，然而输出的误差逐级积累。
+- 直接预测：<span class="math inline">\({y_{t + h} } = {F_{ {\rm{Dir} }
+} }({x_t},{x_{t - 1} },...,{x_{t - N - 1}
+})\)</span>。用数据直接预测某一步的数据，这种方法没有考虑输出数据之间的时序关系。
+- 递归直接预测：<span class="math inline">\(\left\{
+{\begin{array}{*{20}{c} } { {y_{t + 1} } = {F_{ {\rm{DirRec - 1} } }
+}({x_t},{x_{t - 1} },...,{x_{t - N + 1} })}\\ { {y_{t + 2} } = {F_{
+{\rm{DirRec - 2} } } }({y_{t + 1} },{x_t},{x_{t - 1} },...,{x_{t - N +
+1} })}\\  \vdots \\ { {y_{t + h} } = {F_{ {\rm{DirRec - h} } } }({y_{t +
+h - 1} },...,{y_{t + 1} },{x_t},{x_{t - 1} },...,{x_{t - N + 1}
+})}\end{array} } \right\}\)</span>。它仍存在误差积累问题。 -
+多输入多输出预测：避免误差积累。</p>
+<h1 id="lstm-长短期记忆网络">3 LSTM 长短期记忆网络</h1>
+<blockquote>
+<p>Benefiting from the self-feedback mechanism, the recurrent neural
+network (RNN) model has advantages in exploring the temporal
+relationships in time series. However, it is more prone to gradient
+disappearance in practical applications. LSTM is designed to solve this
+problem on the basis of RNN, and thus with the ability to build long
+term dependencies.</p>
+</blockquote>
+<p><span class="math inline">\({\Psi _t} = {\rm{Sigmoid(} }{W_{x\Psi }
+}{x_t}{\rm{ + } }{W_{\Psi h} }{h_{t - 1} } + {b_\Psi }{\rm{)(} }\Psi
+{\rm{ = } }f,i,o{\rm{)} }\)</span><br />
+<span class="math inline">\({g_t} = \tanh ({W_{gx} }{x_t} + {W_{gh}
+}{h_{t - 1} } + {b_g})\)</span><br />
+<span class="math inline">\({s_t} = {g_t} \odot {i_t} + {s_{t - 1} }
+\odot {f_t}\)</span><br />
+<span class="math inline">\({h_t} = \tanh ({s_t}) \odot {o_t}\)</span>
+<img
+src="https://pic4.zhimg.com/v2-aa1eba31e6bca1d0a0076cf12ac3a0ab_r.jpg" /></p>
+<h1 id="tcn-时域卷积网络-未清楚理解">4 TCN 时域卷积网络
+（未清楚理解）</h1>
+<ul>
+<li>因果卷积</li>
+<li>膨胀卷积</li>
+<li>残差连接</li>
+</ul>
+<h1 id="拟合">5 拟合</h1>
+<p>利用分解拟合的方法，用多个block去学习时间序列的特征。</p>
+<p>传统的方法可以将序列分成周期性、趋势性、余量三个部分分别拟合，而如果将block设置为超参数，更能适合不同的模型。它的优点是可以对复杂特征的时间序列进行特征提取。</p>
+<p>另外，通过多个LSTM组成神经元链，每一级LSTM同时接受本级输入与上一级残差，让网络更精确地拟合数据。（类似梯度增强的方法）</p>
+
+  </article>
+  <!-- tag -->
+  <div class="mt-12 pt-6 border-t border-gray-200">
     
-    <a href="/2023/05/19/%E6%A6%82%E7%8E%87%E9%A2%84%E6%B5%8B%E8%AF%84%E4%BC%B0%E6%96%B9%E6%B3%95/">
-      <header>
-        <h2 class="font-bold text-xl">
-          概率预测评估方法
-        </h2>
-      </header>
-      <section class="text-gray-400 my-1 text-sm time">
-        <p class="line-clamp-4">
-          
-        </p>
-        <p class="line-clamp-4">
-          May 19
-          ·
-          2 min
-        </p>
-      </section>
-    </a>
-  
-    
-    
-    <a href="/2023/05/19/LSTM-%E6%A6%82%E7%8E%87%E6%A8%A1%E5%9E%8B/">
-      <header>
-        <h2 class="font-bold text-xl">
-          LSTM+概率模型
-        </h2>
-      </header>
-      <section class="text-gray-400 my-1 text-sm time">
-        <p class="line-clamp-4">
-          
-        </p>
-        <p class="line-clamp-4">
-          May 19
-          ·
-          3 min
-        </p>
-      </section>
-    </a>
-  
-    
-    
-    <a href="/2023/04/21/%E6%A6%82%E7%8E%87%E9%A2%84%E6%B5%8B%E6%96%B9%E6%B3%95/">
-      <header>
-        <h2 class="font-bold text-xl">
+  </div>
+  <!-- prev and next -->
+  <div class="flex justify-between mt-12 pt-6 border-t border-gray-200">
+    <div>
+      
+        <a href="/2023/04/21/%E6%A6%82%E7%8E%87%E9%A2%84%E6%B5%8B%E6%96%B9%E6%B3%95/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          <iconify-icon width="20" icon="ri:arrow-left-s-line" data-inline="false"></iconify-icon>
           概率预测方法
-        </h2>
-      </header>
-      <section class="text-gray-400 my-1 text-sm time">
-        <p class="line-clamp-4">
-          
-        </p>
-        <p class="line-clamp-4">
-          Apr 21
-          ·
-          2 min
-        </p>
-      </section>
-    </a>
-  
-    
-    
-    <a href="/2023/04/05/%E5%A4%9A%E8%BE%93%E5%85%A5%E5%A4%9A%E8%BE%93%E5%87%BA%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%97%B6%E5%BA%8F%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%9E%8B/">
-      <header>
-        <h2 class="font-bold text-xl">
-          多输入多输出深度学习时序预测模型
-        </h2>
-      </header>
-      <section class="text-gray-400 my-1 text-sm time">
-        <p class="line-clamp-4">
-          
-        </p>
-        <p class="line-clamp-4">
-          Apr 05
-          ·
-          2 min
-        </p>
-      </section>
-    </a>
-  
-    
-    
-    <a href="/2023/03/17/%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%AC%94%E8%AE%B0/">
-      <header>
-        <h2 class="font-bold text-xl">
+        </a>
+      
+    </div>
+    <div>
+      
+        <a href="/2023/03/17/%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%AC%94%E8%AE%B0/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
           循环神经网络笔记
-        </h2>
-      </header>
-      <section class="text-gray-400 my-1 text-sm time">
-        <p class="line-clamp-4">
-          
-        </p>
-        <p class="line-clamp-4">
-          Mar 17
-          ·
-          3 min
-        </p>
-      </section>
-    </a>
-  
+          <iconify-icon width="20" icon="ri:arrow-right-s-line" data-inline="false"></iconify-icon>
+        </a>
+      
+    </div>
+  </div>
+  <!-- comment -->
+  <div class="article-comments mt-12">
     
-    
-    <a href="/2023/03/03/%E6%A2%AF%E5%BA%A6%E5%A2%9E%E5%BC%BA%E7%AC%94%E8%AE%B0/">
-      <header>
-        <h2 class="font-bold text-xl">
-          梯度增强笔记
-        </h2>
-      </header>
-      <section class="text-gray-400 my-1 text-sm time">
-        <p class="line-clamp-4">
-          
-        </p>
-        <p class="line-clamp-4">
-          Mar 03
-          ·
-          10 min
-        </p>
-      </section>
-    </a>
-  
-    
-    
-    <a href="/2023/01/13/%E6%A0%B8%E5%87%BD%E6%95%B0%E7%AC%94%E8%AE%B0/">
-      <header>
-        <h2 class="font-bold text-xl">
-          核函数笔记
-        </h2>
-      </header>
-      <section class="text-gray-400 my-1 text-sm time">
-        <p class="line-clamp-4">
-          
-        </p>
-        <p class="line-clamp-4">
-          Jan 13
-          ·
-          4 min
-        </p>
-      </section>
-    </a>
-  
-    
-    
-    <a href="/2023/01/06/%E9%AB%98%E6%96%AF%E8%BF%87%E7%A8%8B%E5%9B%9E%E5%BD%92%E7%AC%94%E8%AE%B0/">
-      <header>
-        <h2 class="font-bold text-xl">
-          高斯过程回归笔记
-        </h2>
-      </header>
-      <section class="text-gray-400 my-1 text-sm time">
-        <p class="line-clamp-4">
-          
-        </p>
-        <p class="line-clamp-4">
-          Jan 06
-          ·
-          3 min
-        </p>
-      </section>
-    </a>
-  
+
+  </div>
 </section>
+<!-- js inspect -->
+
+<script src="/lib/clipboard.min.js"></script>
+
+
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+  });
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+  $(document).ready(() => {
+    const maraidConfig = {
+      theme: "dark",
+      logLevel: 3,
+      flowchart: { curve: "linear" },
+      gantt: { axisFormat: "%m/%d/%Y" },
+      sequence: { actorMargin: 50 },
+    };
+    mermaid.initialize(maraidConfig);
+  });
+</script>
+
+
+
+<script src="/lib/fancybox/fancybox.umd.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+    $('.post-content').each(function(i){
+      $(this).find('img').each(function(){
+        if ($(this).parent().hasClass('fancybox') || $(this).parent().is('a')) return;
+        var alt = this.alt;
+        if (alt) $(this).after('<span class="fancybox-alt">' + alt + '</span>');
+        $(this).wrap('<a class="fancybox-img" href="' + this.src + '" data-fancybox=\"gallery\" data-caption="' + alt + '"></a>')
+      });
+      $(this).find('.fancybox').each(function(){
+        $(this).attr('rel', 'article' + i);
+      });
+    });
+
+    Fancybox.bind('[data-fancybox="gallery"]', {
+        // options
+    })
+  })
+</script>
+
+<!-- tocbot begin -->
+
+<script src="/lib/tocbot/tocbot.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+      tocbot.init({
+        // Where to render the table of contents.
+        tocSelector: '.post-toc',
+        // Where to grab the headings to build the table of contents.
+        contentSelector: '.post-content',
+        // Which headings to grab inside of the contentSelector element.
+        headingSelector: 'h1, h2, h3',
+        // For headings inside relative or absolute positioned containers within content.
+        hasInnerContainers: true,
+    });
+  })
+</script>
+<!-- tocbot end -->
+
 
   </main>
   <footer class="flex flex-col h-40 items-center justify-center text-gray-400 text-sm">

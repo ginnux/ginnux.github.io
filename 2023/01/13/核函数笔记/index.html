@@ -9,13 +9,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-  <meta name="author" content="John Doe">
+  <meta name="author" content="ginnux">
 
 
 
 
 
-<title>boost | Hexo</title>
+<title>核函数笔记 | Gin&#39;s Blog</title>
 
 
 
@@ -148,25 +148,19 @@
     <nav class="flex items-center text-base">
       <a href="/" class="group">
         <h2 class="font-medium tracking-tighterp text-l p-2">
-          <img class="w-5 mr-2 inline-block transition-transform group-hover:rotate-[30deg]" id="logo" src="/images/logo.svg" alt="Hexo" />
-          Hexo
+          <img class="w-5 mr-2 inline-block transition-transform group-hover:rotate-[30deg]" id="logo" src="/images/logo.svg" alt="Gin's Blog" />
+          Gin&#39;s Blog
         </h2>
       </a>
       <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
-        boost
+        核函数笔记
       </div>
       <div class="flex-1"></div>
       <div class="flex items-center gap-3">
         
-          <a class="hidden sm:flex" href="/archives">Posts</a>
-        
-          <a class="hidden sm:flex" href="/category">Categories</a>
-        
-          <a class="hidden sm:flex" href="/tag">Tags</a>
-        
         
           
-            <a class="w-5 h-5 hidden sm:flex" title="Github" target="_blank" rel="noopener" href="https://github.com/xbmlz">
+            <a class="w-5 h-5 hidden sm:flex" title="Github" target="_blank" rel="noopener" href="https://github.com/ginnux">
               <iconify-icon width="20" icon="ri:github-line"></iconify-icon>
             </a>
           
@@ -189,18 +183,6 @@
 <div id="menu-panel" class="h-0 overflow-hidden sm:hidden fixed left-0 right-0 top-12 bottom-0 z-10">
   <div id="menu-content" class="relative z-20 bg-white/80 px-6 sm:px-8 py-2 backdrop-blur-xl -translate-y-full transition-transform duration-300">
     <ul class="nav flex flex-col sm:flex-row text-sm font-medium">
-      
-        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
-          <a href="/archives" class="flex h-12 sm:h-auto items-center">Posts</a>
-        </li>
-      
-        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
-          <a href="/category" class="flex h-12 sm:h-auto items-center">Categories</a>
-        </li>
-      
-        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
-          <a href="/tag" class="flex h-12 sm:h-auto items-center">Tags</a>
-        </li>
       
     </ul>
   </div>
@@ -226,80 +208,100 @@
   <header class="overflow-hidden pt-6 pb-6 md:pt-12">
     <div class="pt-4 md:pt-6">
       <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
-        boost
+        核函数笔记
       </h1>
       <p class="mb-6">
         
       </p>
       <div>
         <section class="flex items-center gap-3 text-sm">
-          <time>2023-07-29 13:46:30</time>
+          <time>2023-01-13 09:12:14</time>
           <span class="text-gray-400">·</span>
-          <span>2 min</span>
+          <span>4 min</span>
           <span class="text-gray-400">·</span>
-          <span>643 words</span>
+          <span>1.2k words</span>
         </section>
       </div>
     </div>
   </header>
   <!-- content -->
   <article class="post-content mt-10 prose dark:prose-invert post-content">
-    <h1 id="梯度增强笔记">梯度增强笔记</h1>
-<h2 id="集成模型">1 集成模型</h2>
-<p>集成模型（Ensemble
-Model）不是一种具体的模型，而是一种模型框架，将若干个模型(弱学习器)按照一定的策略组合起来，共同完成一个任务。</p>
-<h3 id="bagging模型">1.1 bagging模型</h3>
-<p>bagging模型会把(相同的)若干基础模型简单的“装起来”——基础模型独立训练，然后将它们的输出用特定的规则综合(比如求平均值)起来，形成最后的预测值。在回归任务中，通常认为基础模型分布在真实值周围，将输出平均一下，即得到一个稳定的预测值。（随机森林）
-<img
-src="https://pic3.zhimg.com/80/v2-4b31a06b0f7168503443e67d98cfde4e_720w.webp"
-alt="bagging" /></p>
-<h3 id="stacking模型">1.2 stacking模型</h3>
-<p>stacking模型是bagging模型的增强版，允许使用不同的基础模型通过不同权重进行决策。
-<img
-src="https://pic4.zhimg.com/80/v2-60109736ab4331374e4307a625d67c7b_720w.webp"
-alt="stacking" /></p>
-<h3 id="boosting模型">1.3 boosting模型</h3>
-<p>boosting模型是通过串联形式将基础模型联系起来，每一级基础模型会对前级模型的残差，即弱学习器不完美的部分补全，最终不断缩小残差，达到优良的拟合效果。
-<img
-src="https://pic3.zhimg.com/80/v2-b8efd3f521896f4387ca49c03fdc94f6_720w.webp"
-alt="boosting" /></p>
-<h2 id="回归任务的梯度增强">2 回归任务的梯度增强</h2>
-<h3 id="简介">2.1 简介</h3>
-<p>以数据集<span class="math inline">\({\rm{D} } =
-[({X_1},{y_1}),({X_2},{y_2}),...,({X_n},{y_n})]\)</span>，为例。拟合<span
-class="math inline">\({y_n} = f({X_n})\)</span>,降低误差，实现预测。
-设第<span class="math inline">\(k\)</span>级的决策树为<span
-class="math inline">\({T_k}({X_n})\)</span>，这一级的决策树是弥补上一级决策树的残差，即训练：<span
-class="math inline">\({\hat \varepsilon _{k - 1} } = {T_k}({x_n}) +
-{\varepsilon _k}\)</span>。
-根据该递归公式求和，最后一级残差忽略不计，可知，最终的预测模型为：${y_n}
-= _{i = 1}^k { {T_i}({x_n})} $。</p>
-<h3 id="训练方法">2.2 训练方法</h3>
-<p>在训练第k个决策树的时候，我们需要最小化这样一个loss函数： <span
-class="math inline">\(J = \sum \limits _{i = 1}^n {L({y_i},{f_k}({x_i} )
-) }\)</span>，而<span class="math inline">\({f_k}({x_i}) = {f_{k - 1}
-}({x_i}) + {T_k}({x_i})\)</span>，通过更新<span
-class="math inline">\({f_k}({x_i})\)</span>，使损失函数最小化。
-即每次学习：<span class="math inline">\({f_k}({x_i}) = {f_{k - 1}
-}({x_i}) - \alpha \times \frac{ {\partial J} } { {\partial {f_{k - 1} }
-} }\)</span>(<span class="math inline">\(\alpha\)</span>为学习率)。
-得到<span class="math inline">\(k\)</span>级决策树：<span
-class="math inline">\({T_k}({x_n}) = - \alpha \times \frac{ {\partial J}
-} { {\partial {f_{k - 1} } } }\)</span>。 采用残差平方和<span
-class="math inline">\(J = \sum\limits_{i = 1}^N {\frac{1}{2} { {({y_i} -
-{f_k}({x_i}))}^2} }\)</span>作为损失函数，可以得到第<span
-class="math inline">\(k\)</span>级决策树是拟合前级决策树的残差。得到：<span
-class="math inline">\({T_k}({x_n}) = - \alpha \times \frac{ {\partial J}
-}{ {\partial {f_{k - 1} }} } = \alpha ({y_n} - {f_{k - 1}
-}({x_n}))\)</span>。</p>
-<h2 id="梯度增强实现">3 梯度增强实现</h2>
-<h3 id="训练">3.1 训练</h3>
-<p>在训练每一个决策树时，需要逐级训练，训练速度较慢。</p>
-<h3 id="预测">3.2 预测</h3>
-<p>预测时，每个决策树可以单独计算，可以通过并行计算提升速度。</p>
-<h2 id="示例代码">4 示例代码</h2>
-<p>摘自<a
-target="_blank" rel="noopener" href="https://github.com/lipengyuer/DataScience/blob/master/src/algoritm/GBDTRegression.py">GBDTRegression</a>。</p>
+    <h1 id="核函数">1 核函数</h1>
+<p>核(也称GPs中的协方差函数)是GPs的一个重要组成部分，它决定GP的先验和后验形状。它们通过定义两个数据点的“相似性”，并结合相似的数据点应该具有相似的目标值的假设，对正在学习的函数进行编码。</p>
+<h1 id="sklearn内置核函数">2 sklearn内置核函数</h1>
+<p>sklearn中的核函数可以使用<code>+</code>,<code>*</code>,<code>**</code>进行组合运算形成新的核函数。参考<a
+target="_blank" rel="noopener" href="https://scikit-learn.org.cn/view/86.html#1.7.5%20%E9%AB%98%E6%96%AF%E8%BF%87%E7%A8%8B%E5%86%85%E6%A0%B8">scikit-learn高斯过程文档</a>。</p>
+<h2 id="基础核">2.1 基础核</h2>
+<p>常数核函数：<code>ConstantKerne</code>，用于调整其平均值。</p>
+<p>白噪声核函数：<code>WhiteKernel</code>，参数<code>noise_level</code>用于调整其参数水平。
+## 2.2 径向基核</p>
+<p>平方指数核：<code>RBF</code>，稳定，基本上是最常用的核函数。</p>
+<h2 id="matérn核">2.3 Matérn核</h2>
+<p>马特恩核：<code>Matern</code>，是RBF核的推广，可以通过参数<code>nu</code>调整其平滑度，当$$，该核即为RBF核。实际上，RBF核的条件过于理想，实际上在通常的学习中，利用Matern核可以允许让学习函数真正接近底层函数。
+## 2.4 有理二次核</p>
+<p>有理二次核：<code>RationalQuadratic</code>,可以看作是具有不同特征长度尺度的RBF和的混合。</p>
+<h2 id="周期核">2.5 周期核</h2>
+<p>周期核：<code>ExpSineSquared</code>，该核可以对周期函数进行建模。</p>
+<h2 id="点积核">2.6 点积核</h2>
+<p>点积核：<code>DotProduct</code>，非平稳。</p>
+<h1 id="如何正确选用核函数">3 如何正确选用核函数</h1>
+<p>正确选用核函数需要根据实际的数据决定，详细选取最佳的核函数参考<a
+target="_blank" rel="noopener" href="https://www.cs.toronto.edu/~duvenaud/cookbook/">The Kernel
+Cookbook: Advice on Covariance
+functions</a>。可以根据基础核运算组合成自定义核。</p>
+<p>尽管最常用的方法是直接使用RBF作为核函数，若想要更加精确地去拟合实际的底层函数，需要对不同的核函数进行<code>+</code>运算，<code>*</code>运算进行组合，甚至自己编写相应的python函数。</p>
+<p>如下例子（摘自<a
+target="_blank" rel="noopener" href="https://scikit-learn.org.cn/view/86.html#1.7.5%20%E9%AB%98%E6%96%AF%E8%BF%87%E7%A8%8B%E5%86%85%E6%A0%B8">scikit-learn高斯过程文档</a>），为夏威夷莫纳洛阿观测站收集的大气二氧化碳平均浓度：
+&gt; <img
+src="https://scikit-learn.org.cn/upload/4abd53bcab7374dbe3a0b9c5065a0732.png" />
+&gt;
+此示例基于[RW2006]第5.4.3节。给出了一个基于对数边际似然梯度上升的复杂核工程和超参数优化的实例。这些数据包括1958年至1997年期间在夏威夷莫纳洛阿观测站收集的大气二氧化碳平均浓度(按体积计算，以百万分之数(Ppmv)计)。目的是模拟二氧化碳浓度随时间t的变化。
+&gt; 核由几个术语组成，它们负责解释信号的不同属性： &gt; &gt; -
+一个长期的，平稳的上升趋势可以用<code>RBF</code>核来解释。长尺度较大的径向基函数(RBF)内核强制成平滑，没有强制趋势上升，这就留给GP选择。长度、比例尺和振幅是自由的超参数。
+&gt; - 季节性因素，由定期的 <code>ExpSineSquared</code>
+内核解释，固定周期为1年。
+该周期分量的长度尺度控制其平滑度是一个自由参数。
+为了使准确周期性的衰减，采用带有<code>RBF</code>内核的产品。
+该<code>RBF</code>组件的长度尺寸控制衰减时间，并且是另一个自由参数。
+&gt; - 较小的中期不规则性将由 <code>RationalQuadratic</code> 核来解释，
+<code>RationalQuadratic</code> 内核组件的长度尺度和 alpha
+参数决定长度尺度的扩散性。 根据<a
+target="_blank" rel="noopener" href="http://www.gaussianprocess.org/gpml/chapters/RW.pdf">RW2006</a>，这些不规则性可以更好地由
+<code>RationalQuadratic</code> 来解释， 而不是 <code>RBF</code>
+核，这可能是因为它可以容纳几个长度尺度。 &gt; - “noise(噪声)”
+一词，由一个 RBF
+内核贡献组成，它将解释相关的噪声分量，如局部天气现象以及
+<code>WhiteKernel</code> 对白噪声的贡献。
+相对幅度和<code>RBF</code>的长度尺度是进一步的自由参数。</p>
+<p>所得核函数为： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kernel=<span class="number">34.4</span>**<span class="number">2</span> * RBF(length_scale=<span class="number">41.8</span>)</span><br><span class="line">+ <span class="number">3.27</span>**<span class="number">2</span> * RBF(length_scale=<span class="number">180</span>) * ExpSineSquared(length_scale=<span class="number">1.44</span>,periodicity=<span class="number">1</span>)</span><br><span class="line">+ <span class="number">0.446</span>**<span class="number">2</span> * RationalQuadratic(alpha=<span class="number">17.7</span>, length_scale=<span class="number">0.957</span>)</span><br><span class="line">+ <span class="number">0.197</span>**<span class="number">2</span> * RBF(length_scale=<span class="number">0.138</span>) + WhiteKernel(noise_level=<span class="number">0.0336</span>)</span><br></pre></td></tr></table></figure></p>
+<h1 id="常用核函数">4 常用核函数</h1>
+<h2 id="常值核函数">4.1 常值核函数</h2>
+<p><span class="math inline">\({\displaystyle K_{\operatorname {C}
+}(x,x&#39;)=C}\)</span> ## 4.2 线性核函数</p>
+<p><span class="math inline">\({\displaystyle K_{\operatorname {L}
+}(x,x&#39;)=x^{T}x&#39;}\)</span></p>
+<h2 id="白噪声核函数">4.3 白噪声核函数</h2>
+<p><span class="math inline">\({\displaystyle K_{\operatorname {GN}
+}(x,x&#39;)=\sigma ^{2}\delta _{x,x&#39;} }\)</span> ## 4.4
+平方指数核函数（RBF）</p>
+<p><span class="math inline">\({\displaystyle K_{\operatorname {SE}
+}(x,x&#39;)=\exp {\Big (}-{\frac {\|d\|^{2} }{2\ell ^{2} } }{\Big )}
+}\)</span></p>
+<h2 id="奥恩斯坦-乌伦贝克过程">4.5 奥恩斯坦-乌伦贝克过程</h2>
+<p><span class="math inline">\({\displaystyle K_{\operatorname {OU}
+}(x,x&#39;)=\exp \left(-{\frac {|d|}{\ell } }\right)}\)</span></p>
+<h2 id="马特恩核函数">4.6 马特恩核函数</h2>
+<p><span class="math inline">\({\displaystyle K_{\operatorname {Matern}
+}(x,x&#39;)={\frac {2^{1-\nu } }{\Gamma (\nu )} }{\Big (}{\frac { {\sqrt
+{2\nu } }|d|}{\ell } }{\Big )}^{\nu }K_{\nu }{\Big (}{\frac { {\sqrt
+{2\nu } }|d|}{\ell } }{\Big )} }\)</span></p>
+<h2 id="周期核函数">4.7 周期核函数</h2>
+<p><span class="math inline">\({\displaystyle K_{\operatorname {P}
+}(x,x&#39;)=\exp \left(-{\frac {2\sin ^{2}\left({\frac {d}{2}
+}\right)}{\ell ^{2} } }\right)}\)</span></p>
+<h2 id="有理数平方核函数">4.8 有理数平方核函数</h2>
+<p><span class="math inline">\({\displaystyle K_{\operatorname {RQ}
+}(x,x&#39;)=(1+|d|^{2})^{-\alpha },\quad \alpha \geq 0}\)</span></p>
 
   </article>
   <!-- tag -->
@@ -310,11 +312,16 @@ target="_blank" rel="noopener" href="https://github.com/lipengyuer/DataScience/b
   <div class="flex justify-between mt-12 pt-6 border-t border-gray-200">
     <div>
       
+        <a href="/2023/03/03/%E6%A2%AF%E5%BA%A6%E5%A2%9E%E5%BC%BA%E7%AC%94%E8%AE%B0/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          <iconify-icon width="20" icon="ri:arrow-left-s-line" data-inline="false"></iconify-icon>
+          梯度增强笔记
+        </a>
+      
     </div>
     <div>
       
-        <a href="/2023/07/28/root/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
-          
+        <a href="/2023/01/06/%E9%AB%98%E6%96%AF%E8%BF%87%E7%A8%8B%E5%9B%9E%E5%BD%92%E7%AC%94%E8%AE%B0/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          高斯过程回归笔记
           <iconify-icon width="20" icon="ri:arrow-right-s-line" data-inline="false"></iconify-icon>
         </a>
       
@@ -441,9 +448,8 @@ target="_blank" rel="noopener" href="https://github.com/lipengyuer/DataScience/b
 
   <!-- copyright -->
   <div class="flex items-center gap-2">
-    <span>© 2022</span>
-    <iconify-icon width="18" icon="emojione-monotone:maple-leaf" ></iconify-icon>
-    <a href="https://github.com/xbmlz" target="_blank" rel="noopener noreferrer">xbmlz</a>
+    <span>© 2023</span>
+    <a href="https://github.com/ginnux" target="_blank" rel="noopener noreferrer">ginnux</a>
   </div>
   <!-- powered by -->
   <div class="flex items-center gap-2">
@@ -462,7 +468,7 @@ target="_blank" rel="noopener" href="https://github.com/lipengyuer/DataScience/b
 
   <script>
     $(document).ready(function () {
-      const mapleCount = "10";
+      const mapleCount = "12";
       const speed = "0.5";
       const mapleEl = document.getElementById("maple");
       const maples = Array.from({ length: mapleCount }).map(() => {

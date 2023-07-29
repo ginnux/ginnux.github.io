@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <meta name="author" content="ginnux">
+
+
+
+
+
+<title>梯度增强笔记 | Gin&#39;s Blog</title>
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/nprogress/nprogress.css">
+
+
+
+<script src="/lib/jquery.min.js"></script>
+
+
+<script src="/lib/iconify-icon.min.js"></script>
+
+
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+  };
+</script>
+
+
+<script src="/lib/nprogress/nprogress.js"></script>
+
+<script>
+  $(document).ready(() => {
+    NProgress.configure({
+      showSpinner: false,
+    });
+    NProgress.start();
+    $("#nprogress .bar").css({
+      background: "#de7441",
+    });
+    $("#nprogress .peg").css({
+      "box-shadow": "0 0 2px #de7441, 0 0 4px #de7441",
+    });
+    $("#nprogress .spinner-icon").css({
+      "border-top-color": "#de7441",
+      "border-left-color": "#de7441",
+    });
+    setTimeout(function () {
+      NProgress.done();
+      $(".fade").removeClass("out");
+    }, 800);
+  });
+</script>
+
+<script>
+  (function () {
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+    if (setting === "dark" || (prefersDark && setting !== "light"))
+      document.documentElement.classList.toggle("dark", true);
+    let isDark = document.documentElement.classList.contains("dark");
+  })();
+
+  $(document).ready(function () {
+    // init icon
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDark = document.documentElement.classList.contains("dark");
+    $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+
+    function toggleGiscusTheme() {
+      const isDark = document.documentElement.classList.contains("dark");
+      const giscusFrame = document.querySelector("iframe.giscus-frame");
+      if (giscusFrame) {
+        giscusFrame.contentWindow.postMessage(
+          {
+            giscus: {
+              setConfig: {
+                theme: isDark ? "dark" : "light",
+              },
+            },
+          },
+          "https://giscus.app"
+        );
+      }
+    }
+
+
+    // toggle dark mode
+    function toggleDark() {
+      let isDark = document.documentElement.classList.contains("dark");
+      isDark = !isDark;
+      const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+      document.documentElement.classList.toggle("dark", isDark);
+      $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+      if (prefersDark === isDark) {
+        localStorage.setItem("hexo-color-scheme", "auto");
+      } else {
+        localStorage.setItem("hexo-color-scheme", isDark ? "dark" : "light");
+      }
+      toggleGiscusTheme();
+    }
+    $("#toggle-dark").click(toggleDark);
+    // listen dark mode change
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+        if (setting === "auto") {
+          document.documentElement.classList.toggle("dark", e.matches);
+          $("#theme-icon").attr(
+            "icon",
+            e.matches ? "ri:moon-line" : "ri:sun-line"
+          );
+          toggleGiscusTheme();
+        }
+      });
+  });
+</script>
+
+
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class="font-sans bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-200">
+  <header class="fixed w-full px-5 py-1 z-10 backdrop-blur-xl backdrop-saturate-150 border-b border-black/5">
+  <div class="max-auto">
+    <nav class="flex items-center text-base">
+      <a href="/" class="group">
+        <h2 class="font-medium tracking-tighterp text-l p-2">
+          <img class="w-5 mr-2 inline-block transition-transform group-hover:rotate-[30deg]" id="logo" src="/images/logo.svg" alt="Gin's Blog" />
+          Gin&#39;s Blog
+        </h2>
+      </a>
+      <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
+        梯度增强笔记
+      </div>
+      <div class="flex-1"></div>
+      <div class="flex items-center gap-3">
+        
+        
+          
+            <a class="w-5 h-5 hidden sm:flex" title="Github" target="_blank" rel="noopener" href="https://github.com/ginnux">
+              <iconify-icon width="20" icon="ri:github-line"></iconify-icon>
+            </a>
+          
+        
+        <a class="w-5 h-5" title="toggle theme" id="toggle-dark">
+          <iconify-icon width="20" icon="" id="theme-icon"></iconify-icon>
+        </a>
+      </div>
+      <div class="flex items-center justify-center gap-3 ml-3 sm:hidden">
+        <span class="w-5 h-5" aria-hidden="true" role="img" id="open-menu">
+          <iconify-icon width="20" icon="carbon:menu" ></iconify-icon>
+        </span>
+        <span class="w-5 h-5 hidden" aria-hidden="true" role="img" id="close-menu">
+          <iconify-icon  width="20" icon="carbon:close" ></iconify-icon>
+        </span>
+      </div>
+    </nav>
+  </div>
+</header>
+<div id="menu-panel" class="h-0 overflow-hidden sm:hidden fixed left-0 right-0 top-12 bottom-0 z-10">
+  <div id="menu-content" class="relative z-20 bg-white/80 px-6 sm:px-8 py-2 backdrop-blur-xl -translate-y-full transition-transform duration-300">
+    <ul class="nav flex flex-col sm:flex-row text-sm font-medium">
+      
+    </ul>
+  </div>
+  <div class="mask bg-black/20 absolute inset-0"></div>
+</div>
+
+  <main class="p-12">
+    <!-- css -->
+
+<link rel="stylesheet" href="/lib/fancybox/fancybox.min.css">
+
+
+<link rel="stylesheet" href="/lib/tocbot/tocbot.min.css">
+
+<!-- toc -->
+
+  <!-- tocbot -->
+<nav class="post-toc toc text-sm w-48 relative top-32 right-0 opacity-70 hidden lg:block" style="position: fixed !important;"></nav>
+
+
+<section class="px-6 max-w-prose mx-auto md:px-0">
+  <!-- header -->
+  <header class="overflow-hidden pt-6 pb-6 md:pt-12">
+    <div class="pt-4 md:pt-6">
+      <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
+        梯度增强笔记
+      </h1>
+      <p class="mb-6">
+        
+      </p>
+      <div>
+        <section class="flex items-center gap-3 text-sm">
+          <time>2023-03-03 13:05:20</time>
+          <span class="text-gray-400">·</span>
+          <span>10 min</span>
+          <span class="text-gray-400">·</span>
+          <span>2k words</span>
+        </section>
+      </div>
+    </div>
+  </header>
+  <!-- content -->
+  <article class="post-content mt-10 prose dark:prose-invert post-content">
+    <h1 id="集成模型">1 集成模型</h1>
+<p>集成模型（Ensemble
+Model）不是一种具体的模型，而是一种模型框架，将若干个模型(弱学习器)按照一定的策略组合起来，共同完成一个任务。</p>
+<h2 id="bagging模型">1.1 bagging模型</h2>
+<p>bagging模型会把(相同的)若干基础模型简单的“装起来”——基础模型独立训练，然后将它们的输出用特定的规则综合(比如求平均值)起来，形成最后的预测值。在回归任务中，通常认为基础模型分布在真实值周围，将输出平均一下，即得到一个稳定的预测值。（随机森林）
+<img
+src="https://pic3.zhimg.com/80/v2-4b31a06b0f7168503443e67d98cfde4e_720w.webp" /></p>
+<h2 id="stacking模型">1.2 stacking模型</h2>
+<p>stacking模型是bagging模型的增强版，允许使用不同的基础模型通过不同权重进行决策。
+<img
+src="https://pic4.zhimg.com/80/v2-60109736ab4331374e4307a625d67c7b_720w.webp" /></p>
+<h2 id="boosting模型">1.3 boosting模型</h2>
+<p>boosting模型是通过串联形式将基础模型联系起来，每一级基础模型会对前级模型的残差，即弱学习器不完美的部分补全，最终不断缩小残差，达到优良的拟合效果。
+<img
+src="https://pic3.zhimg.com/80/v2-b8efd3f521896f4387ca49c03fdc94f6_720w.webp" /></p>
+<h1 id="回归任务的梯度增强">2 回归任务的梯度增强</h1>
+<h2 id="简介">2.1 简介</h2>
+<p>以数据集<span class="math inline">\({\rm{D} } =
+[({X_1},{y_1}),({X_2},{y_2}),...,({X_n},{y_n})]\)</span>，为例。拟合<span
+class="math inline">\({y_n} = f({X_n})\)</span>,降低误差，实现预测。
+设第<span class="math inline">\(k\)</span>级的决策树为<span
+class="math inline">\({T_k}({X_n})\)</span>，这一级的决策树是弥补上一级决策树的残差，即训练：<span
+class="math inline">\({\hat \varepsilon _{k - 1} } = {T_k}({x_n}) +
+{\varepsilon _k}\)</span>。
+根据该递归公式求和，最后一级残差忽略不计，可知，最终的预测模型为：${y_n}
+= _{i = 1}^k { {T_i}({x_n})} $。</p>
+<h2 id="训练方法">2.2 训练方法</h2>
+<p>在训练第k个决策树的时候，我们需要最小化这样一个loss函数： <span
+class="math inline">\(J = \sum \limits _{i = 1}^n {L({y_i},{f_k}({x_i} )
+) }\)</span>，而<span class="math inline">\({f_k}({x_i}) = {f_{k - 1}
+}({x_i}) + {T_k}({x_i})\)</span>，通过更新<span
+class="math inline">\({f_k}({x_i})\)</span>，使损失函数最小化。
+即每次学习：<span class="math inline">\({f_k}({x_i}) = {f_{k - 1}
+}({x_i}) - \alpha \times \frac{ {\partial J} } { {\partial {f_{k - 1} }
+} }\)</span>(<span class="math inline">\(\alpha\)</span>为学习率)。
+得到<span class="math inline">\(k\)</span>级决策树：<span
+class="math inline">\({T_k}({x_n}) = - \alpha \times \frac{ {\partial J}
+} { {\partial {f_{k - 1} } } }\)</span>。 采用残差平方和<span
+class="math inline">\(J = \sum\limits_{i = 1}^N {\frac{1}{2} { {({y_i} -
+{f_k}({x_i}))}^2} }\)</span>作为损失函数，可以得到第<span
+class="math inline">\(k\)</span>级决策树是拟合前级决策树的残差。得到：<span
+class="math inline">\({T_k}({x_n}) = - \alpha \times \frac{ {\partial J}
+}{ {\partial {f_{k - 1} }} } = \alpha ({y_n} - {f_{k - 1}
+}({x_n}))\)</span>。</p>
+<h1 id="梯度增强实现">3 梯度增强实现</h1>
+<h2 id="训练">3.1 训练</h2>
+<p>在训练每一个决策树时，需要逐级训练，训练速度较慢。</p>
+<h2 id="预测">3.2 预测</h2>
+<p>预测时，每个决策树可以单独计算，可以通过并行计算提升速度。</p>
+<h1 id="示例代码">4 示例代码</h1>
+<p>摘自<a
+target="_blank" rel="noopener" href="https://github.com/lipengyuer/DataScience/blob/master/src/algoritm/GBDTRegression.py">GBDTRegression</a>。</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">Created on 2020年4月9日</span></span><br><span class="line"><span class="string">@author: Administrator</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="comment">#二叉树的节点</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Node</span>():</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, best_feature_ID, best_split_value</span>):</span><br><span class="line">        self.feature_id = best_feature_ID</span><br><span class="line">        self.split_value = best_split_value</span><br><span class="line">        self.left_child = <span class="literal">None</span></span><br><span class="line">        self.right_child = <span class="literal">None</span></span><br><span class="line">        self.if_leaf = <span class="literal">False</span></span><br><span class="line">        self.mean_y = <span class="literal">None</span></span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">set_left_chilren</span>(<span class="params">self, a_node</span>):</span><br><span class="line">        self.left_child = a_node</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">set_right_chilren</span>(<span class="params">self, a_node</span>):</span><br><span class="line">        self.right_child = a_node</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_left_chilren</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> self.left_child</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_right_chilren</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> self.right_child   </span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">set_as_leaf</span>(<span class="params">self</span>):    </span><br><span class="line">        self.if_leaf = <span class="literal">True</span></span><br><span class="line">        </span><br><span class="line"><span class="comment">#一个二叉树</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Tree4Decision</span>():</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, a_node</span>):</span><br><span class="line">        self.root = a_node</span><br><span class="line">        self.current_node = a_node</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CARTRegression</span>():</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        self.feature_num = <span class="literal">None</span></span><br><span class="line">        self.tree = <span class="literal">None</span></span><br><span class="line">        self.tree_size = <span class="number">0</span></span><br><span class="line">        self.max_depth = <span class="number">10</span></span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">fit</span>(<span class="params">self, X, Y</span>):</span><br><span class="line">        self.feature_num = <span class="built_in">len</span>(X[<span class="number">0</span>])</span><br><span class="line">        ID_list = [i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(X))]</span><br><span class="line">        a_node = Node(-<span class="number">1</span>, -<span class="number">1</span>)<span class="comment">#根节点</span></span><br><span class="line">        self.tree = Tree4Decision(a_node)</span><br><span class="line">        self.build_tree(X, Y, ID_list, self.tree.current_node, <span class="literal">True</span>, <span class="number">0</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#参数分别为全部特征和输出，当前节点的样本序号，当前节点的父节点，当前节点是左子节点还是右子节点</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">build_tree</span>(<span class="params">self, X, Y, ID_list, parent_node, if_left_child, depth</span>):</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(ID_list)==<span class="number">0</span>: <span class="keyword">return</span> </span><br><span class="line">        <span class="keyword">elif</span> <span class="built_in">len</span>(ID_list)==<span class="number">1</span> <span class="keyword">or</span> depth &gt;  self.max_depth:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;一个叶子节点&quot;</span>)</span><br><span class="line">            parent_node.set_as_leaf()</span><br><span class="line">            mean_y = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> ID <span class="keyword">in</span> ID_list: mean_y += Y[ID]</span><br><span class="line">            mean_y = mean_y/<span class="built_in">len</span>(ID_list)</span><br><span class="line">            parent_node.mean_y = mean_y</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            best_feature_ID, best_split_value = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">            best_mse = -<span class="number">1</span></span><br><span class="line">            <span class="keyword">for</span> sample_id <span class="keyword">in</span> ID_list:</span><br><span class="line">                <span class="keyword">for</span> feature_id <span class="keyword">in</span> <span class="built_in">range</span>(self.feature_num):</span><br><span class="line">                    <span class="comment">#找到最佳分割特征和取值</span></span><br><span class="line">                    this_mse = self.get_mse(X, Y, ID_list, sample_id, feature_id)</span><br><span class="line"><span class="comment">#                     print(&#x27;this_mse&#x27;, this_mse, best_mse)</span></span><br><span class="line">                    <span class="keyword">if</span> best_mse==-<span class="number">1</span> <span class="keyword">or</span> this_mse &lt; best_mse: </span><br><span class="line">                        best_mse = this_mse</span><br><span class="line">                        best_feature_ID = feature_id</span><br><span class="line">                        best_split_value = X[sample_id, best_feature_ID]</span><br><span class="line">            self.tree_size += <span class="number">1</span></span><br><span class="line">            </span><br><span class="line">            left_ID_list, right_ID_list = [], []   </span><br><span class="line">            <span class="keyword">for</span> ID <span class="keyword">in</span> ID_list:</span><br><span class="line">                <span class="keyword">if</span> X[ID, best_feature_ID] &lt;= best_split_value:</span><br><span class="line">                    left_ID_list.append(ID)</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    right_ID_list.append(ID)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;这个是第&quot;</span>, self.tree_size, <span class="string">&quot;个节点, 深度为&quot;</span>, depth, <span class="built_in">len</span>(left_ID_list), <span class="built_in">len</span>(right_ID_list))</span><br><span class="line">            this_node = Node(best_feature_ID, best_split_value)</span><br><span class="line">            <span class="keyword">if</span> if_left_child: parent_node.set_left_chilren(this_node)</span><br><span class="line">            <span class="keyword">else</span>: parent_node.set_right_chilren(this_node)</span><br><span class="line">            depth += <span class="number">1</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">####由于分裂值可能是极大值挥着极小值，导致其中一组为空，这条线上的计算会一直持续</span></span><br><span class="line">            self.build_tree(X, Y, left_ID_list, this_node, <span class="literal">True</span>, depth)</span><br><span class="line">            self.build_tree(X, Y, right_ID_list, this_node, <span class="literal">False</span>, depth)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_mse</span>(<span class="params">self, X, Y, ID_list, sample_id, feature_id</span>):</span><br><span class="line">        best_split_value = X[sample_id, feature_id]</span><br><span class="line">        left_ID_list, right_ID_list = [], []</span><br><span class="line">        left_y_sum, right_y_sum = <span class="number">0</span>, <span class="number">0</span> </span><br><span class="line">        <span class="keyword">for</span> ID <span class="keyword">in</span> ID_list:</span><br><span class="line">            <span class="keyword">if</span> X[ID, feature_id] &lt;= best_split_value:</span><br><span class="line">                left_ID_list.append(ID)</span><br><span class="line">                left_y_sum += Y[ID]</span><br><span class="line">                </span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                right_ID_list.append(ID)</span><br><span class="line">                right_y_sum += Y[ID]</span><br><span class="line">        left_y_mean = right_y_sum/<span class="built_in">len</span>(right_ID_list) <span class="keyword">if</span> <span class="built_in">len</span>(right_ID_list)&gt;<span class="number">0</span> <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line">        right_y_mean = left_y_sum/<span class="built_in">len</span>(left_ID_list) <span class="keyword">if</span> <span class="built_in">len</span>(left_ID_list)&gt;<span class="number">0</span> <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line">        left_mse, right_mse = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> ID <span class="keyword">in</span> left_ID_list: left_mse += (left_y_mean - Y[ID])**<span class="number">2</span></span><br><span class="line">        <span class="keyword">for</span> ID <span class="keyword">in</span> right_ID_list: right_mse += (right_y_mean - Y[ID])**<span class="number">2</span></span><br><span class="line">        total_mse = left_mse + right_mse</span><br><span class="line">        <span class="keyword">return</span> total_mse</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">predict</span>(<span class="params">self, X</span>):</span><br><span class="line">        pred_list = []</span><br><span class="line">        <span class="keyword">for</span> sample_id <span class="keyword">in</span> <span class="built_in">range</span>(X.shape[<span class="number">0</span>]):</span><br><span class="line">            </span><br><span class="line">            current_node = self.tree.root.left_child</span><br><span class="line"><span class="comment">#             print(&#x27;current_node&#x27;, current_node)</span></span><br><span class="line">            pred = self.search_in_tree(X[sample_id], current_node)</span><br><span class="line">            pred_list.append(pred)</span><br><span class="line">        <span class="keyword">return</span> pred_list</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">search_in_tree</span>(<span class="params">self, features, current_node</span>):</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span> current_node.if_leaf!=<span class="literal">True</span>:</span><br><span class="line">            <span class="built_in">print</span>(current_node.feature_id, features[current_node.feature_id], current_node.split_value, current_node.if_leaf)</span><br><span class="line">            <span class="built_in">print</span>(current_node.left_child, current_node.right_child)</span><br><span class="line">            <span class="keyword">if</span> features[current_node.feature_id] &lt;= current_node.split_value:</span><br><span class="line">                a_node = current_node.get_left_chilren()</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                a_node = current_node.get_right_chilren()</span><br><span class="line">            <span class="keyword">if</span> a_node==<span class="literal">None</span>:</span><br><span class="line">                <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">            current_node = a_node</span><br><span class="line"><span class="comment">#             print(current_node.__dict__)</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;答案&quot;</span>, current_node.mean_y)</span><br><span class="line">        <span class="keyword">return</span> current_node.mean_y</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    data = pd.read_excel(<span class="string">&quot;ENB2012_data2_example.xlsx&quot;</span>)</span><br><span class="line">    data = data.sample(frac=<span class="number">1</span>)</span><br><span class="line">    data = data.values</span><br><span class="line">    X, Y = data[: ,<span class="number">0</span>: -<span class="number">2</span>], data[:, -<span class="number">2</span>]</span><br><span class="line"><span class="comment">#     plt.plot(X[:,0])</span></span><br><span class="line"><span class="comment">#     plt.show()</span></span><br><span class="line"><span class="comment">#     print(X)</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">#训练模型</span></span><br><span class="line">    model = CARTRegression()</span><br><span class="line">    model.fit(X, Y)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#测试</span></span><br><span class="line">    prediction = model.predict(X)</span><br><span class="line">    <span class="built_in">print</span>(prediction)</span><br><span class="line">    res = [Y[i]-prediction[i] <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(prediction))]</span><br><span class="line">    plt.plot(Y)</span><br><span class="line">    plt.plot(prediction)</span><br><span class="line">    plt.show()</span><br><span class="line">    </span><br></pre></td></tr></table></figure>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CARTRegression</span>():</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        self.feature_num = <span class="literal">None</span></span><br><span class="line">        self.tree = <span class="literal">None</span></span><br><span class="line">        self.tree_size = <span class="number">0</span></span><br><span class="line">        self.max_depth = <span class="number">10</span></span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">fit</span>(<span class="params">self, X, Y</span>):</span><br><span class="line">        self.feature_num = <span class="built_in">len</span>(X[<span class="number">0</span>])</span><br><span class="line">        ID_list = [i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(X))]</span><br><span class="line">        a_node = Node(-<span class="number">1</span>, -<span class="number">1</span>)<span class="comment">#根节点</span></span><br><span class="line">        self.tree = Tree4Decision(a_node)</span><br><span class="line">        self.build_tree(X, Y, ID_list, self.tree.current_node, <span class="literal">True</span>, <span class="number">0</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#参数分别为全部特征和输出，当前节点的样本序号，当前节点的父节点，当前节点是左子节点还是右子节点</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">build_tree</span>(<span class="params">self, X, Y, ID_list, parent_node, if_left_child, depth</span>):</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(ID_list)==<span class="number">0</span>: <span class="keyword">return</span> </span><br><span class="line">        <span class="keyword">elif</span> <span class="built_in">len</span>(ID_list)==<span class="number">1</span> <span class="keyword">or</span> depth &gt;  self.max_depth:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;一个叶子节点&quot;</span>)</span><br><span class="line">            parent_node.set_as_leaf()</span><br><span class="line">            mean_y = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> ID <span class="keyword">in</span> ID_list: mean_y += Y[ID]</span><br><span class="line">            mean_y = mean_y/<span class="built_in">len</span>(ID_list)</span><br><span class="line">            parent_node.mean_y = mean_y</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            best_feature_ID, best_split_value = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">            best_mse = -<span class="number">1</span></span><br><span class="line">            <span class="keyword">for</span> sample_id <span class="keyword">in</span> ID_list:</span><br><span class="line">                <span class="keyword">for</span> feature_id <span class="keyword">in</span> <span class="built_in">range</span>(self.feature_num):</span><br><span class="line">                    <span class="comment">#找到最佳分割特征和取值</span></span><br><span class="line">                    this_mse = self.get_mse(X, Y, ID_list, sample_id, feature_id)</span><br><span class="line"><span class="comment">#                     print(&#x27;this_mse&#x27;, this_mse, best_mse)</span></span><br><span class="line">                    <span class="keyword">if</span> best_mse==-<span class="number">1</span> <span class="keyword">or</span> this_mse &lt; best_mse: </span><br><span class="line">                        best_mse = this_mse</span><br><span class="line">                        best_feature_ID = feature_id</span><br><span class="line">                        best_split_value = X[sample_id, best_feature_ID]</span><br><span class="line">            self.tree_size += <span class="number">1</span></span><br><span class="line">            </span><br><span class="line">            left_ID_list, right_ID_list = [], []   </span><br><span class="line">            <span class="keyword">for</span> ID <span class="keyword">in</span> ID_list:</span><br><span class="line">                <span class="keyword">if</span> X[ID, best_feature_ID] &lt;= best_split_value:</span><br><span class="line">                    left_ID_list.append(ID)</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    right_ID_list.append(ID)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;这个是第&quot;</span>, self.tree_size, <span class="string">&quot;个节点, 深度为&quot;</span>, depth, <span class="built_in">len</span>(left_ID_list), <span class="built_in">len</span>(right_ID_list))</span><br><span class="line">            this_node = Node(best_feature_ID, best_split_value)</span><br><span class="line">            <span class="keyword">if</span> if_left_child: parent_node.set_left_chilren(this_node)</span><br><span class="line">            <span class="keyword">else</span>: parent_node.set_right_chilren(this_node)</span><br><span class="line">            depth += <span class="number">1</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">####由于分裂值可能是极大值挥着极小值，导致其中一组为空，这条线上的计算会一直持续</span></span><br><span class="line">            self.build_tree(X, Y, left_ID_list, this_node, <span class="literal">True</span>, depth)</span><br><span class="line">            self.build_tree(X, Y, right_ID_list, this_node, <span class="literal">False</span>, depth)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_mse</span>(<span class="params">self, X, Y, ID_list, sample_id, feature_id</span>):</span><br><span class="line">        best_split_value = X[sample_id, feature_id]</span><br><span class="line">        left_ID_list, right_ID_list = [], []</span><br><span class="line">        left_y_sum, right_y_sum = <span class="number">0</span>, <span class="number">0</span> </span><br><span class="line">        <span class="keyword">for</span> ID <span class="keyword">in</span> ID_list:</span><br><span class="line">            <span class="keyword">if</span> X[ID, feature_id] &lt;= best_split_value:</span><br><span class="line">                left_ID_list.append(ID)</span><br><span class="line">                left_y_sum += Y[ID]</span><br><span class="line">                </span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                right_ID_list.append(ID)</span><br><span class="line">                right_y_sum += Y[ID]</span><br><span class="line">        left_y_mean = right_y_sum/<span class="built_in">len</span>(right_ID_list) <span class="keyword">if</span> <span class="built_in">len</span>(right_ID_list)&gt;<span class="number">0</span> <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line">        right_y_mean = left_y_sum/<span class="built_in">len</span>(left_ID_list) <span class="keyword">if</span> <span class="built_in">len</span>(left_ID_list)&gt;<span class="number">0</span> <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line">        left_mse, right_mse = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> ID <span class="keyword">in</span> left_ID_list: left_mse += (left_y_mean - Y[ID])**<span class="number">2</span></span><br><span class="line">        <span class="keyword">for</span> ID <span class="keyword">in</span> right_ID_list: right_mse += (right_y_mean - Y[ID])**<span class="number">2</span></span><br><span class="line">        total_mse = left_mse + right_mse</span><br><span class="line">        <span class="keyword">return</span> total_mse</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">predict</span>(<span class="params">self, X</span>):</span><br><span class="line">        pred_list = []</span><br><span class="line">        <span class="keyword">for</span> sample_id <span class="keyword">in</span> <span class="built_in">range</span>(X.shape[<span class="number">0</span>]):</span><br><span class="line">            </span><br><span class="line">            current_node = self.tree.root.left_child</span><br><span class="line"><span class="comment">#             print(&#x27;current_node&#x27;, current_node)</span></span><br><span class="line">            pred = self.search_in_tree(X[sample_id], current_node)</span><br><span class="line">            pred_list.append(pred)</span><br><span class="line">        <span class="keyword">return</span> pred_list</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">search_in_tree</span>(<span class="params">self, features, current_node</span>):</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span> current_node.if_leaf!=<span class="literal">True</span>:</span><br><span class="line">            <span class="built_in">print</span>(current_node.feature_id, features[current_node.feature_id], current_node.split_value, current_node.if_leaf)</span><br><span class="line">            <span class="built_in">print</span>(current_node.left_child, current_node.right_child)</span><br><span class="line">            <span class="keyword">if</span> features[current_node.feature_id] &lt;= current_node.split_value:</span><br><span class="line">                a_node = current_node.get_left_chilren()</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                a_node = current_node.get_right_chilren()</span><br><span class="line">            <span class="keyword">if</span> a_node==<span class="literal">None</span>:</span><br><span class="line">                <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">            current_node = a_node</span><br><span class="line"><span class="comment">#             print(current_node.__dict__)</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;答案&quot;</span>, current_node.mean_y)</span><br><span class="line">        <span class="keyword">return</span> current_node.mean_y</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#一个非常简单的GBDT，只有残差拟合模块。</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">GBDT</span>():</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, max_tree_num=<span class="number">3</span></span>):</span><br><span class="line">        self.tree_list = []</span><br><span class="line">        self.max_tree_num = max_tree_num</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">fit</span>(<span class="params">self, x, y</span>):</span><br><span class="line">        residual = y</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(self.max_tree_num):</span><br><span class="line">            model = CARTRegression()</span><br><span class="line">            model.fit(x, residual)</span><br><span class="line">            self.tree_list.append(model)</span><br><span class="line">            prediction = model.predict(x)</span><br><span class="line">            residual = residual - prediction</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">predict</span>(<span class="params">self, x</span>):</span><br><span class="line">        y = np.zeros(x.shape[<span class="number">0</span>])</span><br><span class="line">        <span class="keyword">for</span> model <span class="keyword">in</span> self.tree_list:</span><br><span class="line">            new_pred = np.array(model.predict(x))</span><br><span class="line">            y += new_pred</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;new_pred&#x27;</span>, new_pred)</span><br><span class="line">        <span class="keyword">return</span> y</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">MSE</span>(<span class="params">prediction, real_value</span>):</span><br><span class="line">    r = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(prediction)):</span><br><span class="line">        r += (prediction[i]-real_value[i])**<span class="number">2</span></span><br><span class="line">    <span class="keyword">return</span> r</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    data = pd.read_excel(<span class="string">&quot;ENB2012_data2_example.xlsx&quot;</span>)</span><br><span class="line">    data = data.sample(frac=<span class="number">1</span>)</span><br><span class="line">    data = data.values</span><br><span class="line">    X, Y = data[: ,<span class="number">0</span>: -<span class="number">2</span>], data[:, -<span class="number">2</span>]</span><br><span class="line"><span class="comment">#     plt.plot(X[:,0])</span></span><br><span class="line"><span class="comment">#     plt.show()</span></span><br><span class="line"><span class="comment">#     print(X)</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">#训练模型</span></span><br><span class="line">    model = GBDT(max_tree_num=<span class="number">3</span>)<span class="comment">#变化CART的个数，可以看到拟合误差(残差平方和降低了一点)</span></span><br><span class="line">    model.fit(X, Y)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#测试</span></span><br><span class="line">    prediction = model.predict(X)</span><br><span class="line">    <span class="built_in">print</span>(prediction)</span><br><span class="line">    res = [Y[i]-prediction[i] <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(prediction))]</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;残差平方和是&quot;</span>, MSE(prediction, Y))</span><br><span class="line">    plt.plot(Y)</span><br><span class="line">    plt.plot(prediction)</span><br><span class="line">    plt.show()</span><br></pre></td></tr></table></figure>
+
+  </article>
+  <!-- tag -->
+  <div class="mt-12 pt-6 border-t border-gray-200">
+    
+  </div>
+  <!-- prev and next -->
+  <div class="flex justify-between mt-12 pt-6 border-t border-gray-200">
+    <div>
+      
+        <a href="/2023/03/17/%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%AC%94%E8%AE%B0/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          <iconify-icon width="20" icon="ri:arrow-left-s-line" data-inline="false"></iconify-icon>
+          循环神经网络笔记
+        </a>
+      
+    </div>
+    <div>
+      
+        <a href="/2023/01/13/%E6%A0%B8%E5%87%BD%E6%95%B0%E7%AC%94%E8%AE%B0/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          核函数笔记
+          <iconify-icon width="20" icon="ri:arrow-right-s-line" data-inline="false"></iconify-icon>
+        </a>
+      
+    </div>
+  </div>
+  <!-- comment -->
+  <div class="article-comments mt-12">
+    
+
+  </div>
+</section>
+<!-- js inspect -->
+
+<script src="/lib/clipboard.min.js"></script>
+
+
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+  });
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+  $(document).ready(() => {
+    const maraidConfig = {
+      theme: "dark",
+      logLevel: 3,
+      flowchart: { curve: "linear" },
+      gantt: { axisFormat: "%m/%d/%Y" },
+      sequence: { actorMargin: 50 },
+    };
+    mermaid.initialize(maraidConfig);
+  });
+</script>
+
+
+
+<script src="/lib/fancybox/fancybox.umd.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+    $('.post-content').each(function(i){
+      $(this).find('img').each(function(){
+        if ($(this).parent().hasClass('fancybox') || $(this).parent().is('a')) return;
+        var alt = this.alt;
+        if (alt) $(this).after('<span class="fancybox-alt">' + alt + '</span>');
+        $(this).wrap('<a class="fancybox-img" href="' + this.src + '" data-fancybox=\"gallery\" data-caption="' + alt + '"></a>')
+      });
+      $(this).find('.fancybox').each(function(){
+        $(this).attr('rel', 'article' + i);
+      });
+    });
+
+    Fancybox.bind('[data-fancybox="gallery"]', {
+        // options
+    })
+  })
+</script>
+
+<!-- tocbot begin -->
+
+<script src="/lib/tocbot/tocbot.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+      tocbot.init({
+        // Where to render the table of contents.
+        tocSelector: '.post-toc',
+        // Where to grab the headings to build the table of contents.
+        contentSelector: '.post-content',
+        // Which headings to grab inside of the contentSelector element.
+        headingSelector: 'h1, h2, h3',
+        // For headings inside relative or absolute positioned containers within content.
+        hasInnerContainers: true,
+    });
+  })
+</script>
+<!-- tocbot end -->
+
+
+  </main>
+  <footer class="flex flex-col h-40 items-center justify-center text-gray-400 text-sm">
+  <!-- busuanzi -->
+  
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- Busuanzi Analytics -->
+<div class="flex items-center gap-2">
+  <span>Visitor Count</span>
+  <span id="busuanzi_value_site_uv"></span>
+  <span>Totalview</span>
+  <span id="busuanzi_value_site_pv"></span>
+</div>
+<!-- End Busuanzi Analytics -->
+
+
+  <!-- copyright -->
+  <div class="flex items-center gap-2">
+    <span>© 2023</span>
+    <a href="https://github.com/ginnux" target="_blank" rel="noopener noreferrer">ginnux</a>
+  </div>
+  <!-- powered by -->
+  <div class="flex items-center gap-2">
+    <span>Powered by</span>
+    <a href="https://hexo.io/" target="_blank" rel="noopener noreferrer">Hexo</a>
+    <span>&</span>
+    <a href="https://github.com/xbmlz/hexo-theme-maple" target="_blank" rel="noopener noreferrer">Maple</a>
+  </div>
+
+</footer>
+
+  <iconify-icon class="fixed right-4 bottom-10 z-100 opacity-0" width="24" icon="ion:arrow-up-c" id="go-top"></iconify-icon>
+  
+<script src="/js/main.js"></script>
+
+
+  <script>
+    $(document).ready(function () {
+      const mapleCount = "12";
+      const speed = "0.5";
+      const mapleEl = document.getElementById("maple");
+      const maples = Array.from({ length: mapleCount }).map(() => {
+        const maple = document.createElement("div");
+        const scale = Math.random() * 0.5 + 0.5;
+        const offset = Math.random() * 2 - 1;
+        const x = Math.random() * mapleEl.clientWidth;
+        const y = -Math.random() * mapleEl.clientHeight;
+        const duration = 10 / speed;
+        const delay = -duration;
+        maple.className = "maple";
+        maple.style.width = `${24 * scale}px`;
+        maple.style.height = `${24 * scale}px`;
+        maple.style.left = `${x}px`;
+        maple.style.top = `${y}px`;
+        maple.style.setProperty("--maple-fall-offset", offset);
+        maple.style.setProperty("--maple-fall-height", `${Math.abs(y) + mapleEl.clientHeight}px`);
+        maple.style.animation = `fall ${duration}s linear infinite`;
+        maple.style.animationDelay = `${delay}s`;
+        mapleEl.appendChild(maple)
+        return maple
+      })
+    });
+  </script>
+  
+
+
+  <div class="w-screen h-screen -z-999" id="maple"></div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+
+</html>
