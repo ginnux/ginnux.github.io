@@ -15,7 +15,7 @@
 
 
 
-<title>多输入多输出深度学习时序预测模型 | Gin&#39;s Blog</title>
+<title>LSTM+概率模型 | Gin&#39;s Blog</title>
 
 
 
@@ -153,7 +153,7 @@
         </h2>
       </a>
       <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
-        多输入多输出深度学习时序预测模型
+        LSTM+概率模型
       </div>
       <div class="flex-1"></div>
       <div class="flex items-center gap-3">
@@ -208,83 +208,82 @@
   <header class="overflow-hidden pt-6 pb-6 md:pt-12">
     <div class="pt-4 md:pt-6">
       <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
-        多输入多输出深度学习时序预测模型
+        LSTM+概率模型
       </h1>
       <p class="mb-6">
         
       </p>
       <div>
         <section class="flex items-center gap-3 text-sm">
-          <time>2023-04-05 18:38:26</time>
+          <time>2023-05-19 13:08:56</time>
           <span class="text-gray-400">·</span>
-          <span>2 min</span>
+          <span>3 min</span>
           <span class="text-gray-400">·</span>
-          <span>641 words</span>
+          <span>684 words</span>
         </section>
       </div>
     </div>
   </header>
   <!-- content -->
   <article class="post-content mt-10 prose dark:prose-invert post-content">
-    <h1 id="常见时序预测分类">1 常见时序预测分类</h1>
+    <h1 id="思路来源">1 思路来源</h1>
+<p>LSTM+概率模型思路来源于文章<a
+target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/abstract/document/9697353">An
+Integrated Missing-Data Tolerant Model for Probabilistic PV Power
+Generation Forecasting</a>。</p>
 <blockquote>
-<p>Broadly, these techniques can be grouped into three major groups:
-statistical methods, traditional machine learning-based methods, and
-deep learning-based methods.</p>
+<p>在所提出的方法中，设计了一个具有<b>概率输出层的自回归LSTM网络</b>来模拟光伏发电配置文件中的时间依赖性和固有不确定性。负对数似然（而不是
+MSE）用于指导模型训练。通过这种方式，<b>传统的基于LSTM的点预测以分布参数的形式扩展到概率预测</b>。基于这样的网络架构，一个模型可以同时高效地完成插补和概率预测任务。</p>
 </blockquote>
-<p>时序预测通常可以有三种方法：即统计学方法、传统机器学习、深度学习。</p>
-<ul>
-<li><p>统计学方法是根据现有数据拟合函数。</p></li>
-<li><p>传统机器学习即例如高斯过程、回归树等方法。</p></li>
-<li><p>深度学习可以自动的建立映射关系，包括CNN，RNN，LSTM。</p></li>
-</ul>
-<h1 id="多步预测策略">2 多步预测策略</h1>
-<p>多步预测可分为四种方法，递归预测、直接预测、递归直接预测、多输入多输出预测。
-- 递归预测：<span class="math inline">\({y_{t + H} } = {F_{ {\rm{Rec} }
-} }({y_{t + H - 1} },{y_{t + H - 2} },...,{y_{t + H - N}
-})\)</span>。用前N步的数据预测下一步，类似<a
-href="./循环神经网络笔记.ipynb">RNN学习笔记</a>中的处理，然而输出的误差逐级积累。
-- 直接预测：<span class="math inline">\({y_{t + h} } = {F_{ {\rm{Dir} }
-} }({x_t},{x_{t - 1} },...,{x_{t - N - 1}
-})\)</span>。用数据直接预测某一步的数据，这种方法没有考虑输出数据之间的时序关系。
-- 递归直接预测：<span class="math inline">\(\left\{
-{\begin{array}{*{20}{c} } { {y_{t + 1} } = {F_{ {\rm{DirRec - 1} } }
-}({x_t},{x_{t - 1} },...,{x_{t - N + 1} })}\\ { {y_{t + 2} } = {F_{
-{\rm{DirRec - 2} } } }({y_{t + 1} },{x_t},{x_{t - 1} },...,{x_{t - N +
-1} })}\\  \vdots \\ { {y_{t + h} } = {F_{ {\rm{DirRec - h} } } }({y_{t +
-h - 1} },...,{y_{t + 1} },{x_t},{x_{t - 1} },...,{x_{t - N + 1}
-})}\end{array} } \right\}\)</span>。它仍存在误差积累问题。 -
-多输入多输出预测：避免误差积累。</p>
-<h1 id="lstm-长短期记忆网络">3 LSTM 长短期记忆网络</h1>
-<blockquote>
-<p>Benefiting from the self-feedback mechanism, the recurrent neural
-network (RNN) model has advantages in exploring the temporal
-relationships in time series. However, it is more prone to gradient
-disappearance in practical applications. LSTM is designed to solve this
-problem on the basis of RNN, and thus with the ability to build long
-term dependencies.</p>
-</blockquote>
-<p><span class="math inline">\({\Psi _t} = {\rm{Sigmoid(} }{W_{x\Psi }
-}{x_t}{\rm{ + } }{W_{\Psi h} }{h_{t - 1} } + {b_\Psi }{\rm{)(} }\Psi
-{\rm{ = } }f,i,o{\rm{)} }\)</span><br />
-<span class="math inline">\({g_t} = \tanh ({W_{gx} }{x_t} + {W_{gh}
-}{h_{t - 1} } + {b_g})\)</span><br />
-<span class="math inline">\({s_t} = {g_t} \odot {i_t} + {s_{t - 1} }
-\odot {f_t}\)</span><br />
-<span class="math inline">\({h_t} = \tanh ({s_t}) \odot {o_t}\)</span>
-<img
-src="https://pic4.zhimg.com/v2-aa1eba31e6bca1d0a0076cf12ac3a0ab_r.jpg" /></p>
-<h1 id="tcn-时域卷积网络-未清楚理解">4 TCN 时域卷积网络
-（未清楚理解）</h1>
-<ul>
-<li>因果卷积</li>
-<li>膨胀卷积</li>
-<li>残差连接</li>
-</ul>
-<h1 id="拟合">5 拟合</h1>
-<p>利用分解拟合的方法，用多个block去学习时间序列的特征。</p>
-<p>传统的方法可以将序列分成周期性、趋势性、余量三个部分分别拟合，而如果将block设置为超参数，更能适合不同的模型。它的优点是可以对复杂特征的时间序列进行特征提取。</p>
-<p>另外，通过多个LSTM组成神经元链，每一级LSTM同时接受本级输入与上一级残差，让网络更精确地拟合数据。（类似梯度增强的方法）</p>
+<h1 id="网络架构">2 网络架构</h1>
+<h2 id="整体架构">2.1 整体架构</h2>
+<p><img
+src="https://camo.githubusercontent.com/702c79abeaff794cd5e641ae19bf3f609ad7a84d43cb1e895802efd800dd29b1/68747470733a2f2f6965656578706c6f72652e696565652e6f72672f6d6564696173746f72655f6e65772f494545452f636f6e74656e742f6d656469612f35392f393932373137302f393639373335332f7875312d333134363938322d736d616c6c2e676966" />
+最终输出结果的概率分布是：<span class="math inline">\({\rm{P} }({x_{
+{t_0} + 1:T} }{\rm{|} }{x_{ {\rm{1} }:{t_0} } }){\rm{ = }
+}\prod\limits_{ {\rm{t = } }{ {\rm{t} }_0} }^T { {P_{\rm{l} } } }
+\;(\;{x_{t + 1} }{\rm{|} }{\theta _{\rm{t} }
+})\)</span>，也就是曲线的条件分布是所有散点概率分布的乘积。</p>
+<h2 id="lstm">2.2 LSTM</h2>
+<p>略</p>
+<h2 id="概率模型">2.3 概率模型</h2>
+<p>其中概率层的计算公式为：<span class="math inline">\({\theta _{\rm{t}
+} } = \phi \;({ {\bf{h} }_{\rm{t} } },{ {\bf{\Theta } }_{\rm{p} }
+})\)</span>，<span
+class="math inline">\(\phi\)</span>是概率层函数，<span
+class="math inline">\({ {\bf{h} }_{\rm{t} }
+}\)</span>是隐藏层输出，<span class="math inline">\({ {\bf{\Theta }
+}_{\rm{p} } }\)</span>是概率层函数。</p>
+<p>高斯分布是最常用的分布，因此概率层设置参数为：<span
+class="math inline">\({\rm{\theta \ = \ (\mu,\ \sigma)}
+}\)</span>，给出均值与标准差。</p>
+<p>使用两个全连接层实现与LSTM隐藏层输出的连接，架构如图：</p>
+<p><img
+src="https://camo.githubusercontent.com/8d30740bf573ea5beced555bc969acd5d9ed36819e7c5889d5f5ce584516cf9d/68747470733a2f2f6965656578706c6f72652e696565652e6f72672f6d6564696173746f72655f6e65772f494545452f636f6e74656e742f6d656469612f35392f393932373137302f393639373335332f7875322d333134363938322d736d616c6c2e676966" /></p>
+<p>由此可计算概率层参数： <span class="math inline">\({\mu _{\rm{t} } }
+= {\bf{w} }_\mu ^{\rm{T} }\;{ {\bf{h} }_{\rm{t} } } + { {\rm{b} }_\mu
+}\)</span>，由全连接层给出； <span class="math inline">\({\sigma
+_{\rm{t} } } = softplus({\bf{w} }_\sigma ^{\rm{T} }\;{ {\bf{h} }_{\rm{t}
+} } + { {\rm{b} }_\sigma }) = {\rm{log} }({\rm{1 + exp} }({\bf{w}
+}_\sigma ^{\rm{T} }\;{ {\bf{h} }_{\rm{t} } } + { {\rm{b} }_\sigma
+}))\)</span>，由全连接层通过softplus函数给出，softplus函数的作用是保持输出在<span
+class="math inline">\((0, + \infty )\)</span>有良好的非线性建模能力。
+代入高斯分布即可计算每一个点的概率分布：<span
+class="math inline">\({P_{\rm{l} } }({x_{t + 1} }{\rm{|} }\;{\theta
+_{\rm{t} } })\;\;{\rm{ = } }\;{P_{\rm{l} } }\;({x_{t + 1} }{\rm{|}
+}\;{\mu _{\rm{t} } },{\sigma _{\rm{t} } }){\rm{ = } }{({\rm{2} }\pi
+{\sigma _{\rm{t} } }^2)^{ {\rm{ - 1/2} } } }\;{ {\rm{e} }^{ {\rm{ - }
+}\frac{ { { {({x_{t + 1} }{\rm{ - } }{\mu _t})}^2} } }{ {({\rm{2}
+}{\sigma _t}^2)} } } }\)</span></p>
+<h1 id="训练">3 训练</h1>
+<p>因为加入了概率层，因此不能使用MSE作为LOSS函数，选取负对数似然函数可以一次性完成神经网络所有层的优化（LSTM+概率层）。（为什么可以？）</p>
+<p>设数据集为N个T步的数据集合：<span class="math inline">\({\{
+{x_{i,\;1:T} }\} _{ {\rm{i} }\;{\rm{ = } }\;{\rm{1} },\; \ldots ,{\rm{N}
+} } }\)</span> 则有LOSS函数：<span class="math inline">\({\cal L} =
+{\rm{ - } }\sum\limits_{ {\rm{i} }\;{\rm{ = } }\;{\rm{1} } }^{\rm{N} }
+{\sum\limits_{ {\rm{t} }\;{\rm{ = } }\;{\rm{0} } }^{\rm{T} } { {\rm{log}
+} } } \;{P_{\rm{l} } }\;(\;{x_{t + 1} }\;{\rm{|} }\;{\theta _{\rm{t} }
+})\)</span>，使用梯度下降法即可完成两层参数优化。</p>
 
   </article>
   <!-- tag -->
@@ -295,16 +294,16 @@ src="https://pic4.zhimg.com/v2-aa1eba31e6bca1d0a0076cf12ac3a0ab_r.jpg" /></p>
   <div class="flex justify-between mt-12 pt-6 border-t border-gray-200">
     <div>
       
-        <a href="/2023/04/21/%E6%A6%82%E7%8E%87%E9%A2%84%E6%B5%8B%E6%96%B9%E6%B3%95/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+        <a href="/2023/05/19/p_forecast_eva/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
           <iconify-icon width="20" icon="ri:arrow-left-s-line" data-inline="false"></iconify-icon>
-          概率预测方法
+          概率预测评估方法
         </a>
       
     </div>
     <div>
       
-        <a href="/2023/03/17/%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%AC%94%E8%AE%B0/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
-          循环神经网络笔记
+        <a href="/2023/04/21/p_forecast_method/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          概率预测方法
           <iconify-icon width="20" icon="ri:arrow-right-s-line" data-inline="false"></iconify-icon>
         </a>
       
@@ -433,6 +432,7 @@ src="https://pic4.zhimg.com/v2-aa1eba31e6bca1d0a0076cf12ac3a0ab_r.jpg" /></p>
   <div class="flex items-center gap-2">
     <span>© 2023</span>
     <a href="https://github.com/ginnux" target="_blank" rel="noopener noreferrer">ginnux</a>
+    <span>Hong Kong, China</span>
   </div>
   <!-- powered by -->
   <div class="flex items-center gap-2">

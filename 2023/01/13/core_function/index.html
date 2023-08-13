@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <meta name="author" content="ginnux">
+
+
+
+
+
+<title>核函数笔记 | Gin&#39;s Blog</title>
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/nprogress/nprogress.css">
+
+
+
+<script src="/lib/jquery.min.js"></script>
+
+
+<script src="/lib/iconify-icon.min.js"></script>
+
+
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+  };
+</script>
+
+
+<script src="/lib/nprogress/nprogress.js"></script>
+
+<script>
+  $(document).ready(() => {
+    NProgress.configure({
+      showSpinner: false,
+    });
+    NProgress.start();
+    $("#nprogress .bar").css({
+      background: "#de7441",
+    });
+    $("#nprogress .peg").css({
+      "box-shadow": "0 0 2px #de7441, 0 0 4px #de7441",
+    });
+    $("#nprogress .spinner-icon").css({
+      "border-top-color": "#de7441",
+      "border-left-color": "#de7441",
+    });
+    setTimeout(function () {
+      NProgress.done();
+      $(".fade").removeClass("out");
+    }, 800);
+  });
+</script>
+
+<script>
+  (function () {
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+    if (setting === "dark" || (prefersDark && setting !== "light"))
+      document.documentElement.classList.toggle("dark", true);
+    let isDark = document.documentElement.classList.contains("dark");
+  })();
+
+  $(document).ready(function () {
+    // init icon
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDark = document.documentElement.classList.contains("dark");
+    $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+
+    function toggleGiscusTheme() {
+      const isDark = document.documentElement.classList.contains("dark");
+      const giscusFrame = document.querySelector("iframe.giscus-frame");
+      if (giscusFrame) {
+        giscusFrame.contentWindow.postMessage(
+          {
+            giscus: {
+              setConfig: {
+                theme: isDark ? "dark" : "light",
+              },
+            },
+          },
+          "https://giscus.app"
+        );
+      }
+    }
+
+
+    // toggle dark mode
+    function toggleDark() {
+      let isDark = document.documentElement.classList.contains("dark");
+      isDark = !isDark;
+      const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+      document.documentElement.classList.toggle("dark", isDark);
+      $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+      if (prefersDark === isDark) {
+        localStorage.setItem("hexo-color-scheme", "auto");
+      } else {
+        localStorage.setItem("hexo-color-scheme", isDark ? "dark" : "light");
+      }
+      toggleGiscusTheme();
+    }
+    $("#toggle-dark").click(toggleDark);
+    // listen dark mode change
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+        if (setting === "auto") {
+          document.documentElement.classList.toggle("dark", e.matches);
+          $("#theme-icon").attr(
+            "icon",
+            e.matches ? "ri:moon-line" : "ri:sun-line"
+          );
+          toggleGiscusTheme();
+        }
+      });
+  });
+</script>
+
+
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body class="font-sans bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-200">
+  <header class="fixed w-full px-5 py-1 z-10 backdrop-blur-xl backdrop-saturate-150 border-b border-black/5">
+  <div class="max-auto">
+    <nav class="flex items-center text-base">
+      <a href="/" class="group">
+        <h2 class="font-medium tracking-tighterp text-l p-2">
+          <img class="w-5 mr-2 inline-block transition-transform group-hover:rotate-[30deg]" id="logo" src="/images/logo.svg" alt="Gin's Blog" />
+          Gin&#39;s Blog
+        </h2>
+      </a>
+      <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
+        核函数笔记
+      </div>
+      <div class="flex-1"></div>
+      <div class="flex items-center gap-3">
+        
+        
+          
+            <a class="w-5 h-5 hidden sm:flex" title="Github" target="_blank" rel="noopener" href="https://github.com/ginnux">
+              <iconify-icon width="20" icon="ri:github-line"></iconify-icon>
+            </a>
+          
+        
+        <a class="w-5 h-5" title="toggle theme" id="toggle-dark">
+          <iconify-icon width="20" icon="" id="theme-icon"></iconify-icon>
+        </a>
+      </div>
+      <div class="flex items-center justify-center gap-3 ml-3 sm:hidden">
+        <span class="w-5 h-5" aria-hidden="true" role="img" id="open-menu">
+          <iconify-icon width="20" icon="carbon:menu" ></iconify-icon>
+        </span>
+        <span class="w-5 h-5 hidden" aria-hidden="true" role="img" id="close-menu">
+          <iconify-icon  width="20" icon="carbon:close" ></iconify-icon>
+        </span>
+      </div>
+    </nav>
+  </div>
+</header>
+<div id="menu-panel" class="h-0 overflow-hidden sm:hidden fixed left-0 right-0 top-12 bottom-0 z-10">
+  <div id="menu-content" class="relative z-20 bg-white/80 px-6 sm:px-8 py-2 backdrop-blur-xl -translate-y-full transition-transform duration-300">
+    <ul class="nav flex flex-col sm:flex-row text-sm font-medium">
+      
+    </ul>
+  </div>
+  <div class="mask bg-black/20 absolute inset-0"></div>
+</div>
+
+  <main class="p-12">
+    <!-- css -->
+
+<link rel="stylesheet" href="/lib/fancybox/fancybox.min.css">
+
+
+<link rel="stylesheet" href="/lib/tocbot/tocbot.min.css">
+
+<!-- toc -->
+
+  <!-- tocbot -->
+<nav class="post-toc toc text-sm w-48 relative top-32 right-0 opacity-70 hidden lg:block" style="position: fixed !important;"></nav>
+
+
+<section class="px-6 max-w-prose mx-auto md:px-0">
+  <!-- header -->
+  <header class="overflow-hidden pt-6 pb-6 md:pt-12">
+    <div class="pt-4 md:pt-6">
+      <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
+        核函数笔记
+      </h1>
+      <p class="mb-6">
+        
+      </p>
+      <div>
+        <section class="flex items-center gap-3 text-sm">
+          <time>2023-01-13 09:12:14</time>
+          <span class="text-gray-400">·</span>
+          <span>4 min</span>
+          <span class="text-gray-400">·</span>
+          <span>1.2k words</span>
+        </section>
+      </div>
+    </div>
+  </header>
+  <!-- content -->
+  <article class="post-content mt-10 prose dark:prose-invert post-content">
+    <h1 id="核函数">1 核函数</h1>
+<p>核(也称GPs中的协方差函数)是GPs的一个重要组成部分，它决定GP的先验和后验形状。它们通过定义两个数据点的“相似性”，并结合相似的数据点应该具有相似的目标值的假设，对正在学习的函数进行编码。</p>
+<h1 id="sklearn内置核函数">2 sklearn内置核函数</h1>
+<p>sklearn中的核函数可以使用<code>+</code>,<code>*</code>,<code>**</code>进行组合运算形成新的核函数。参考<a
+target="_blank" rel="noopener" href="https://scikit-learn.org.cn/view/86.html#1.7.5%20%E9%AB%98%E6%96%AF%E8%BF%87%E7%A8%8B%E5%86%85%E6%A0%B8">scikit-learn高斯过程文档</a>。</p>
+<h2 id="基础核">2.1 基础核</h2>
+<p>常数核函数：<code>ConstantKerne</code>，用于调整其平均值。</p>
+<p>白噪声核函数：<code>WhiteKernel</code>，参数<code>noise_level</code>用于调整其参数水平。
+## 2.2 径向基核</p>
+<p>平方指数核：<code>RBF</code>，稳定，基本上是最常用的核函数。</p>
+<h2 id="matérn核">2.3 Matérn核</h2>
+<p>马特恩核：<code>Matern</code>，是RBF核的推广，可以通过参数<code>nu</code>调整其平滑度，当$$，该核即为RBF核。实际上，RBF核的条件过于理想，实际上在通常的学习中，利用Matern核可以允许让学习函数真正接近底层函数。
+## 2.4 有理二次核</p>
+<p>有理二次核：<code>RationalQuadratic</code>,可以看作是具有不同特征长度尺度的RBF和的混合。</p>
+<h2 id="周期核">2.5 周期核</h2>
+<p>周期核：<code>ExpSineSquared</code>，该核可以对周期函数进行建模。</p>
+<h2 id="点积核">2.6 点积核</h2>
+<p>点积核：<code>DotProduct</code>，非平稳。</p>
+<h1 id="如何正确选用核函数">3 如何正确选用核函数</h1>
+<p>正确选用核函数需要根据实际的数据决定，详细选取最佳的核函数参考<a
+target="_blank" rel="noopener" href="https://www.cs.toronto.edu/~duvenaud/cookbook/">The Kernel
+Cookbook: Advice on Covariance
+functions</a>。可以根据基础核运算组合成自定义核。</p>
+<p>尽管最常用的方法是直接使用RBF作为核函数，若想要更加精确地去拟合实际的底层函数，需要对不同的核函数进行<code>+</code>运算，<code>*</code>运算进行组合，甚至自己编写相应的python函数。</p>
+<p>如下例子（摘自<a
+target="_blank" rel="noopener" href="https://scikit-learn.org.cn/view/86.html#1.7.5%20%E9%AB%98%E6%96%AF%E8%BF%87%E7%A8%8B%E5%86%85%E6%A0%B8">scikit-learn高斯过程文档</a>），为夏威夷莫纳洛阿观测站收集的大气二氧化碳平均浓度：
+&gt; <img
+src="https://scikit-learn.org.cn/upload/4abd53bcab7374dbe3a0b9c5065a0732.png" />
+&gt;
+此示例基于[RW2006]第5.4.3节。给出了一个基于对数边际似然梯度上升的复杂核工程和超参数优化的实例。这些数据包括1958年至1997年期间在夏威夷莫纳洛阿观测站收集的大气二氧化碳平均浓度(按体积计算，以百万分之数(Ppmv)计)。目的是模拟二氧化碳浓度随时间t的变化。
+&gt; 核由几个术语组成，它们负责解释信号的不同属性： &gt; &gt; -
+一个长期的，平稳的上升趋势可以用<code>RBF</code>核来解释。长尺度较大的径向基函数(RBF)内核强制成平滑，没有强制趋势上升，这就留给GP选择。长度、比例尺和振幅是自由的超参数。
+&gt; - 季节性因素，由定期的 <code>ExpSineSquared</code>
+内核解释，固定周期为1年。
+该周期分量的长度尺度控制其平滑度是一个自由参数。
+为了使准确周期性的衰减，采用带有<code>RBF</code>内核的产品。
+该<code>RBF</code>组件的长度尺寸控制衰减时间，并且是另一个自由参数。
+&gt; - 较小的中期不规则性将由 <code>RationalQuadratic</code> 核来解释，
+<code>RationalQuadratic</code> 内核组件的长度尺度和 alpha
+参数决定长度尺度的扩散性。 根据<a
+target="_blank" rel="noopener" href="http://www.gaussianprocess.org/gpml/chapters/RW.pdf">RW2006</a>，这些不规则性可以更好地由
+<code>RationalQuadratic</code> 来解释， 而不是 <code>RBF</code>
+核，这可能是因为它可以容纳几个长度尺度。 &gt; - “noise(噪声)”
+一词，由一个 RBF
+内核贡献组成，它将解释相关的噪声分量，如局部天气现象以及
+<code>WhiteKernel</code> 对白噪声的贡献。
+相对幅度和<code>RBF</code>的长度尺度是进一步的自由参数。</p>
+<p>所得核函数为： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kernel=<span class="number">34.4</span>**<span class="number">2</span> * RBF(length_scale=<span class="number">41.8</span>)</span><br><span class="line">+ <span class="number">3.27</span>**<span class="number">2</span> * RBF(length_scale=<span class="number">180</span>) * ExpSineSquared(length_scale=<span class="number">1.44</span>,periodicity=<span class="number">1</span>)</span><br><span class="line">+ <span class="number">0.446</span>**<span class="number">2</span> * RationalQuadratic(alpha=<span class="number">17.7</span>, length_scale=<span class="number">0.957</span>)</span><br><span class="line">+ <span class="number">0.197</span>**<span class="number">2</span> * RBF(length_scale=<span class="number">0.138</span>) + WhiteKernel(noise_level=<span class="number">0.0336</span>)</span><br></pre></td></tr></table></figure></p>
+<h1 id="常用核函数">4 常用核函数</h1>
+<h2 id="常值核函数">4.1 常值核函数</h2>
+<p><span class="math inline">\({\displaystyle K_{\operatorname {C}
+}(x,x&#39;)=C}\)</span> ## 4.2 线性核函数</p>
+<p><span class="math inline">\({\displaystyle K_{\operatorname {L}
+}(x,x&#39;)=x^{T}x&#39;}\)</span></p>
+<h2 id="白噪声核函数">4.3 白噪声核函数</h2>
+<p><span class="math inline">\({\displaystyle K_{\operatorname {GN}
+}(x,x&#39;)=\sigma ^{2}\delta _{x,x&#39;} }\)</span> ## 4.4
+平方指数核函数（RBF）</p>
+<p><span class="math inline">\({\displaystyle K_{\operatorname {SE}
+}(x,x&#39;)=\exp {\Big (}-{\frac {\|d\|^{2} }{2\ell ^{2} } }{\Big )}
+}\)</span></p>
+<h2 id="奥恩斯坦-乌伦贝克过程">4.5 奥恩斯坦-乌伦贝克过程</h2>
+<p><span class="math inline">\({\displaystyle K_{\operatorname {OU}
+}(x,x&#39;)=\exp \left(-{\frac {|d|}{\ell } }\right)}\)</span></p>
+<h2 id="马特恩核函数">4.6 马特恩核函数</h2>
+<p><span class="math inline">\({\displaystyle K_{\operatorname {Matern}
+}(x,x&#39;)={\frac {2^{1-\nu } }{\Gamma (\nu )} }{\Big (}{\frac { {\sqrt
+{2\nu } }|d|}{\ell } }{\Big )}^{\nu }K_{\nu }{\Big (}{\frac { {\sqrt
+{2\nu } }|d|}{\ell } }{\Big )} }\)</span></p>
+<h2 id="周期核函数">4.7 周期核函数</h2>
+<p><span class="math inline">\({\displaystyle K_{\operatorname {P}
+}(x,x&#39;)=\exp \left(-{\frac {2\sin ^{2}\left({\frac {d}{2}
+}\right)}{\ell ^{2} } }\right)}\)</span></p>
+<h2 id="有理数平方核函数">4.8 有理数平方核函数</h2>
+<p><span class="math inline">\({\displaystyle K_{\operatorname {RQ}
+}(x,x&#39;)=(1+|d|^{2})^{-\alpha },\quad \alpha \geq 0}\)</span></p>
+
+  </article>
+  <!-- tag -->
+  <div class="mt-12 pt-6 border-t border-gray-200">
+    
+  </div>
+  <!-- prev and next -->
+  <div class="flex justify-between mt-12 pt-6 border-t border-gray-200">
+    <div>
+      
+        <a href="/2023/03/03/boosting/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          <iconify-icon width="20" icon="ri:arrow-left-s-line" data-inline="false"></iconify-icon>
+          梯度增强笔记
+        </a>
+      
+    </div>
+    <div>
+      
+        <a href="/2023/01/06/GPR_note/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          高斯过程回归笔记
+          <iconify-icon width="20" icon="ri:arrow-right-s-line" data-inline="false"></iconify-icon>
+        </a>
+      
+    </div>
+  </div>
+  <!-- comment -->
+  <div class="article-comments mt-12">
+    
+
+  </div>
+</section>
+<!-- js inspect -->
+
+<script src="/lib/clipboard.min.js"></script>
+
+
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+  });
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+  $(document).ready(() => {
+    const maraidConfig = {
+      theme: "dark",
+      logLevel: 3,
+      flowchart: { curve: "linear" },
+      gantt: { axisFormat: "%m/%d/%Y" },
+      sequence: { actorMargin: 50 },
+    };
+    mermaid.initialize(maraidConfig);
+  });
+</script>
+
+
+
+<script src="/lib/fancybox/fancybox.umd.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+    $('.post-content').each(function(i){
+      $(this).find('img').each(function(){
+        if ($(this).parent().hasClass('fancybox') || $(this).parent().is('a')) return;
+        var alt = this.alt;
+        if (alt) $(this).after('<span class="fancybox-alt">' + alt + '</span>');
+        $(this).wrap('<a class="fancybox-img" href="' + this.src + '" data-fancybox=\"gallery\" data-caption="' + alt + '"></a>')
+      });
+      $(this).find('.fancybox').each(function(){
+        $(this).attr('rel', 'article' + i);
+      });
+    });
+
+    Fancybox.bind('[data-fancybox="gallery"]', {
+        // options
+    })
+  })
+</script>
+
+<!-- tocbot begin -->
+
+<script src="/lib/tocbot/tocbot.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+      tocbot.init({
+        // Where to render the table of contents.
+        tocSelector: '.post-toc',
+        // Where to grab the headings to build the table of contents.
+        contentSelector: '.post-content',
+        // Which headings to grab inside of the contentSelector element.
+        headingSelector: 'h1, h2, h3',
+        // For headings inside relative or absolute positioned containers within content.
+        hasInnerContainers: true,
+    });
+  })
+</script>
+<!-- tocbot end -->
+
+
+  </main>
+  <footer class="flex flex-col h-40 items-center justify-center text-gray-400 text-sm">
+  <!-- busuanzi -->
+  
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- Busuanzi Analytics -->
+<div class="flex items-center gap-2">
+  <span>Visitor Count</span>
+  <span id="busuanzi_value_site_uv"></span>
+  <span>Totalview</span>
+  <span id="busuanzi_value_site_pv"></span>
+</div>
+<!-- End Busuanzi Analytics -->
+
+
+  <!-- copyright -->
+  <div class="flex items-center gap-2">
+    <span>© 2023</span>
+    <a href="https://github.com/ginnux" target="_blank" rel="noopener noreferrer">ginnux</a>
+    <span>Hong Kong, China</span>
+  </div>
+  <!-- powered by -->
+  <div class="flex items-center gap-2">
+    <span>Powered by</span>
+    <a href="https://hexo.io/" target="_blank" rel="noopener noreferrer">Hexo</a>
+    <span>&</span>
+    <a href="https://github.com/xbmlz/hexo-theme-maple" target="_blank" rel="noopener noreferrer">Maple</a>
+  </div>
+
+</footer>
+
+  <iconify-icon class="fixed right-4 bottom-10 z-100 opacity-0" width="24" icon="ion:arrow-up-c" id="go-top"></iconify-icon>
+  
+<script src="/js/main.js"></script>
+
+
+  <script>
+    $(document).ready(function () {
+      const mapleCount = "12";
+      const speed = "0.5";
+      const mapleEl = document.getElementById("maple");
+      const maples = Array.from({ length: mapleCount }).map(() => {
+        const maple = document.createElement("div");
+        const scale = Math.random() * 0.5 + 0.5;
+        const offset = Math.random() * 2 - 1;
+        const x = Math.random() * mapleEl.clientWidth;
+        const y = -Math.random() * mapleEl.clientHeight;
+        const duration = 10 / speed;
+        const delay = -duration;
+        maple.className = "maple";
+        maple.style.width = `${24 * scale}px`;
+        maple.style.height = `${24 * scale}px`;
+        maple.style.left = `${x}px`;
+        maple.style.top = `${y}px`;
+        maple.style.setProperty("--maple-fall-offset", offset);
+        maple.style.setProperty("--maple-fall-height", `${Math.abs(y) + mapleEl.clientHeight}px`);
+        maple.style.animation = `fall ${duration}s linear infinite`;
+        maple.style.animationDelay = `${delay}s`;
+        mapleEl.appendChild(maple)
+        return maple
+      })
+    });
+  </script>
+  
+
+
+  <div class="w-screen h-screen -z-999" id="maple"></div>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+
+</html>

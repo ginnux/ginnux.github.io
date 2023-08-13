@@ -15,7 +15,7 @@
 
 
 
-<title>概率预测评估方法 | Gin&#39;s Blog</title>
+<title>Archives: 2023/8 | Gin&#39;s Blog</title>
 
 
 
@@ -153,7 +153,7 @@
         </h2>
       </a>
       <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
-        概率预测评估方法
+        
       </div>
       <div class="flex-1"></div>
       <div class="flex items-center gap-3">
@@ -190,215 +190,42 @@
 </div>
 
   <main class="p-12">
-    <!-- css -->
-
-<link rel="stylesheet" href="/lib/fancybox/fancybox.min.css">
-
-
-<link rel="stylesheet" href="/lib/tocbot/tocbot.min.css">
-
-<!-- toc -->
-
-  <!-- tocbot -->
-<nav class="post-toc toc text-sm w-48 relative top-32 right-0 opacity-70 hidden lg:block" style="position: fixed !important;"></nav>
-
-
-<section class="px-6 max-w-prose mx-auto md:px-0">
-  <!-- header -->
-  <header class="overflow-hidden pt-6 pb-6 md:pt-12">
-    <div class="pt-4 md:pt-6">
-      <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
-        概率预测评估方法
-      </h1>
-      <p class="mb-6">
-        
-      </p>
-      <div>
-        <section class="flex items-center gap-3 text-sm">
-          <time>2023-05-19 18:41:31</time>
-          <span class="text-gray-400">·</span>
-          <span>2 min</span>
-          <span class="text-gray-400">·</span>
-          <span>475 words</span>
-        </section>
+    <section class="px-6 max-w-prose mx-auto gap-12 grid grid-cols-1">
+  <div class="flex flex-col h-48 items-center justify-center">
+    <h1 class="site-title text-4xl leading-relaxed">
+      Gin&#39;s Blog
+    </h1>
+    <p class="text-gray-500 mt-2">
+      
+    </p>
+  </div>
+  
+  
+    
+    
+      <div class="relative pointer-events-none">
+        <span class="text-9xl opacity-10 absolute -left-11 -top-6 font-bold">2023</span>
       </div>
-    </div>
-  </header>
-  <!-- content -->
-  <article class="post-content mt-10 prose dark:prose-invert post-content">
-    <h1 id="点估计">1 点估计</h1>
-<h2 id="归一化均方根误差">1.1 归一化均方根误差</h2>
-<p><span class="math inline">\({\rm{nRMSE = 100} }\; \times \;\sqrt
-{\frac{ {\sum\nolimits_{i\; = \;1}^{ {N_t} } {\sum\nolimits_{t\; =
-{t_0}\;}^T | } {x_{i,\;t} } {\rm{ - } } {\mu _{i,\;t} } { {\rm{|} }^2} }
-} { { {N_t}(T - {t_0})} } } \;\%\)</span></p>
-<h2 id="权重均值绝对百分比误差">1.2 权重均值绝对百分比误差</h2>
-<p><span class="math inline">\({\rm{WMAPE = 100} }\; \times \;\frac{
-{\sum\nolimits_{i = 1}^{ {N_t} } {\sum\nolimits_{t = {t_0} }^T | }
-{x_{i,\;t} } {\rm{ - } } {\mu _{i,t} } {\rm{|} } } } { {\sum\nolimits_{i
-= 1}^{ {N_t} } {\sum\nolimits_{t = {t_0}\;}^T | } {x_{i,t} } {\rm{|} } }
-}\%\)</span></p>
-<h1 id="概率估计">2 概率估计</h1>
-<h2 id="平均覆盖误差ace">2.1 平均覆盖误差（ACE）</h2>
-<p>首先求出预测区间覆盖概率： <span class="math inline">\({\rm{PICP} } =
-\frac{ {\sum\nolimits_{i\; = 1}^{ {N_t} } {\sum\nolimits_{t\; =
-{t_0}\;}^T { {c_{i,\;t} } } } } } { { {N_t}(T - {t_0})} }\)</span>,<span
-class="math inline">\({c_i} = \left\{ {\begin{array} {*{20} {c} }
-{1,{x_{i,\;t} } \in [{\rm{U} }_{i,\;t}^{\;\alpha \;},\;{\rm{L}
-}_{i,\;t}^{\;\alpha \;}]\;}\\ {0,\;{x_{i,\;t} }\; \notin [{\rm{U}
-}_{i,\;t}^{\;\alpha \;},\;{\rm{L} }_{i,\;t}^{\;\alpha \;}]\;}
-\end{array} } \right.\)</span> 得平均覆盖误差：<span
-class="math inline">\({\rm{ACE = |} }\;{\rm{PICP - 100} }({\rm{1 - }
-}\alpha )\% \;{\rm{|} }\)</span></p>
-<h2 id="综合锐度与准确率分数">2.2 综合锐度与准确率分数</h2>
-<p>预测区间归一化平均宽度：${} = {} { { {N_t} (T - {t_0}) } }% $</p>
-<p>综合锐度与准确率分数：<span class="math inline">\({\rm{I} } { {\rm{S}
-}^\alpha }({x_{i,\;t} }) = \left\{ {\begin{array} {*{20} {l} } { -
-2\alpha ({U^\alpha }({x_{i,{\kern 1pt} t} }) - {L^\alpha }({x_{i,{\kern
-1pt} t} })) - 4({L^\alpha }({x_{i,{\kern 1pt} t} }) - {x_{i,{\kern 1pt}
-t} }),{\mkern 1mu} if{\mkern 1mu} {x_{i,{\kern 1pt} t} } &lt; {L^\alpha
-}({x_{i,{\kern 1pt} t} })}\\ { - 2\alpha ({U^\alpha }({x_{i,{\kern 1pt}
-t} }) - {L^\alpha }({x_{i,{\kern 1pt} t} })),\;\quad \qquad \qquad
-if{\mkern 1mu} {x_{i,{\kern 1pt} t} } \in P{I^\alpha }({x_{i,{\kern 1pt}
-t} })}\\ { - 2\alpha ({U^\alpha }({x_{i,{\kern 1pt} t} }) - {L^\alpha
-}({x_{i,{\kern 1pt} t} })) - 4({x_{i,{\kern 1pt} t} } - {U^\alpha
-}({x_{i,{\kern 1pt} t} })),{\mkern 1mu} if{\mkern 1mu} {x_{i,{\kern 1pt}
-t} } &gt; {U^\alpha }({x_{i,{\kern 1pt} t} })} \end{array} }
-\right.\)</span></p>
-<p>其中<span class="math inline">\({ {U^\alpha }({x_{i,{\kern 1pt} t}
-})}\)</span>为置信上限，<span class="math inline">\({ {L^\alpha
-}({x_{i,{\kern 1pt} t} })}\)</span>为置信下限。</p>
-<h1 id="部分概率预测方法评估">3 部分概率预测方法评估</h1>
-<p>在文章<a
-target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/abstract/document/9697353">An
-Integrated Missing-Data Tolerant Model for Probabilistic PV Power
-Generation
-Forecasting</a>中，给出了LSTM、ANN（人工神经网络）、GP（高斯过程回归）的概率预测效果表，观察到，LSTM类的综合得分最高，表现优良。
-<img
-src="https://camo.githubusercontent.com/f9583877ca82958d22b82fab86a0d6c536ec4293a247f1fe43dea70fcf6ea30d/68747470733a2f2f6965656578706c6f72652e696565652e6f72672f6d6564696173746f72655f6e65772f494545452f636f6e74656e742f6d656469612f35392f393932373137302f393639373335332f78752e74332d333134363938322d6c617267652e676966" /></p>
-
-  </article>
-  <!-- tag -->
-  <div class="mt-12 pt-6 border-t border-gray-200">
     
-  </div>
-  <!-- prev and next -->
-  <div class="flex justify-between mt-12 pt-6 border-t border-gray-200">
-    <div>
-      
-    </div>
-    <div>
-      
-        <a href="/2023/05/19/LSTM-%E6%A6%82%E7%8E%87%E6%A8%A1%E5%9E%8B/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
-          LSTM+概率模型
-          <iconify-icon width="20" icon="ri:arrow-right-s-line" data-inline="false"></iconify-icon>
-        </a>
-      
-    </div>
-  </div>
-  <!-- comment -->
-  <div class="article-comments mt-12">
-    
-
-  </div>
+    <a href="/2023/08/13/server-update/">
+      <header>
+        <h2 class="font-bold text-xl">
+          【公告】服务器已迁移至中国香港
+        </h2>
+      </header>
+      <section class="text-gray-400 my-1 text-sm time">
+        <p class="line-clamp-4">
+          
+        </p>
+        <p class="line-clamp-4">
+          Aug 13
+          ·
+          1 min
+        </p>
+      </section>
+    </a>
+  
 </section>
-<!-- js inspect -->
-
-<script src="/lib/clipboard.min.js"></script>
-
-
-<script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-    "HTML-CSS": {
-        preferredFont: "TeX",
-        availableFonts: ["STIX","TeX"],
-        linebreaks: { automatic:true },
-        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
-    },
-    tex2jax: {
-        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
-        processEscapes: true,
-        ignoreClass: "tex2jax_ignore|dno",
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-        equationNumbers: { autoNumber: "AMS" },
-        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
-        Macros: { href: "{}" }
-    },
-    messageStyle: "none"
-  });
-</script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-      var all = MathJax.Hub.getAllJax(), i;
-      for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-      }
-  });
-</script>
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-<script>
-  $(document).ready(() => {
-    const maraidConfig = {
-      theme: "dark",
-      logLevel: 3,
-      flowchart: { curve: "linear" },
-      gantt: { axisFormat: "%m/%d/%Y" },
-      sequence: { actorMargin: 50 },
-    };
-    mermaid.initialize(maraidConfig);
-  });
-</script>
-
-
-
-<script src="/lib/fancybox/fancybox.umd.min.js"></script>
-
-<script>
-  $(document).ready(() => {
-    $('.post-content').each(function(i){
-      $(this).find('img').each(function(){
-        if ($(this).parent().hasClass('fancybox') || $(this).parent().is('a')) return;
-        var alt = this.alt;
-        if (alt) $(this).after('<span class="fancybox-alt">' + alt + '</span>');
-        $(this).wrap('<a class="fancybox-img" href="' + this.src + '" data-fancybox=\"gallery\" data-caption="' + alt + '"></a>')
-      });
-      $(this).find('.fancybox').each(function(){
-        $(this).attr('rel', 'article' + i);
-      });
-    });
-
-    Fancybox.bind('[data-fancybox="gallery"]', {
-        // options
-    })
-  })
-</script>
-
-<!-- tocbot begin -->
-
-<script src="/lib/tocbot/tocbot.min.js"></script>
-
-<script>
-  $(document).ready(() => {
-      tocbot.init({
-        // Where to render the table of contents.
-        tocSelector: '.post-toc',
-        // Where to grab the headings to build the table of contents.
-        contentSelector: '.post-content',
-        // Which headings to grab inside of the contentSelector element.
-        headingSelector: 'h1, h2, h3',
-        // For headings inside relative or absolute positioned containers within content.
-        hasInnerContainers: true,
-    });
-  })
-</script>
-<!-- tocbot end -->
-
 
   </main>
   <footer class="flex flex-col h-40 items-center justify-center text-gray-400 text-sm">
@@ -419,6 +246,7 @@ src="https://camo.githubusercontent.com/f9583877ca82958d22b82fab86a0d6c536ec4293
   <div class="flex items-center gap-2">
     <span>© 2023</span>
     <a href="https://github.com/ginnux" target="_blank" rel="noopener noreferrer">ginnux</a>
+    <span>Hong Kong, China</span>
   </div>
   <!-- powered by -->
   <div class="flex items-center gap-2">

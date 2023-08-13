@@ -15,7 +15,7 @@
 
 
 
-<title>核函数笔记 | Gin&#39;s Blog</title>
+<title>概率预测方法 | Gin&#39;s Blog</title>
 
 
 
@@ -153,7 +153,7 @@
         </h2>
       </a>
       <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
-        核函数笔记
+        概率预测方法
       </div>
       <div class="flex-1"></div>
       <div class="flex items-center gap-3">
@@ -208,100 +208,87 @@
   <header class="overflow-hidden pt-6 pb-6 md:pt-12">
     <div class="pt-4 md:pt-6">
       <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
-        核函数笔记
+        概率预测方法
       </h1>
       <p class="mb-6">
         
       </p>
       <div>
         <section class="flex items-center gap-3 text-sm">
-          <time>2023-01-13 09:12:14</time>
+          <time>2023-04-21 18:38:26</time>
           <span class="text-gray-400">·</span>
-          <span>4 min</span>
+          <span>2 min</span>
           <span class="text-gray-400">·</span>
-          <span>1.2k words</span>
+          <span>654 words</span>
         </section>
       </div>
     </div>
   </header>
   <!-- content -->
   <article class="post-content mt-10 prose dark:prose-invert post-content">
-    <h1 id="核函数">1 核函数</h1>
-<p>核(也称GPs中的协方差函数)是GPs的一个重要组成部分，它决定GP的先验和后验形状。它们通过定义两个数据点的“相似性”，并结合相似的数据点应该具有相似的目标值的假设，对正在学习的函数进行编码。</p>
-<h1 id="sklearn内置核函数">2 sklearn内置核函数</h1>
-<p>sklearn中的核函数可以使用<code>+</code>,<code>*</code>,<code>**</code>进行组合运算形成新的核函数。参考<a
-target="_blank" rel="noopener" href="https://scikit-learn.org.cn/view/86.html#1.7.5%20%E9%AB%98%E6%96%AF%E8%BF%87%E7%A8%8B%E5%86%85%E6%A0%B8">scikit-learn高斯过程文档</a>。</p>
-<h2 id="基础核">2.1 基础核</h2>
-<p>常数核函数：<code>ConstantKerne</code>，用于调整其平均值。</p>
-<p>白噪声核函数：<code>WhiteKernel</code>，参数<code>noise_level</code>用于调整其参数水平。
-## 2.2 径向基核</p>
-<p>平方指数核：<code>RBF</code>，稳定，基本上是最常用的核函数。</p>
-<h2 id="matérn核">2.3 Matérn核</h2>
-<p>马特恩核：<code>Matern</code>，是RBF核的推广，可以通过参数<code>nu</code>调整其平滑度，当$$，该核即为RBF核。实际上，RBF核的条件过于理想，实际上在通常的学习中，利用Matern核可以允许让学习函数真正接近底层函数。
-## 2.4 有理二次核</p>
-<p>有理二次核：<code>RationalQuadratic</code>,可以看作是具有不同特征长度尺度的RBF和的混合。</p>
-<h2 id="周期核">2.5 周期核</h2>
-<p>周期核：<code>ExpSineSquared</code>，该核可以对周期函数进行建模。</p>
-<h2 id="点积核">2.6 点积核</h2>
-<p>点积核：<code>DotProduct</code>，非平稳。</p>
-<h1 id="如何正确选用核函数">3 如何正确选用核函数</h1>
-<p>正确选用核函数需要根据实际的数据决定，详细选取最佳的核函数参考<a
-target="_blank" rel="noopener" href="https://www.cs.toronto.edu/~duvenaud/cookbook/">The Kernel
-Cookbook: Advice on Covariance
-functions</a>。可以根据基础核运算组合成自定义核。</p>
-<p>尽管最常用的方法是直接使用RBF作为核函数，若想要更加精确地去拟合实际的底层函数，需要对不同的核函数进行<code>+</code>运算，<code>*</code>运算进行组合，甚至自己编写相应的python函数。</p>
-<p>如下例子（摘自<a
-target="_blank" rel="noopener" href="https://scikit-learn.org.cn/view/86.html#1.7.5%20%E9%AB%98%E6%96%AF%E8%BF%87%E7%A8%8B%E5%86%85%E6%A0%B8">scikit-learn高斯过程文档</a>），为夏威夷莫纳洛阿观测站收集的大气二氧化碳平均浓度：
-&gt; <img
-src="https://scikit-learn.org.cn/upload/4abd53bcab7374dbe3a0b9c5065a0732.png" />
-&gt;
-此示例基于[RW2006]第5.4.3节。给出了一个基于对数边际似然梯度上升的复杂核工程和超参数优化的实例。这些数据包括1958年至1997年期间在夏威夷莫纳洛阿观测站收集的大气二氧化碳平均浓度(按体积计算，以百万分之数(Ppmv)计)。目的是模拟二氧化碳浓度随时间t的变化。
-&gt; 核由几个术语组成，它们负责解释信号的不同属性： &gt; &gt; -
-一个长期的，平稳的上升趋势可以用<code>RBF</code>核来解释。长尺度较大的径向基函数(RBF)内核强制成平滑，没有强制趋势上升，这就留给GP选择。长度、比例尺和振幅是自由的超参数。
-&gt; - 季节性因素，由定期的 <code>ExpSineSquared</code>
-内核解释，固定周期为1年。
-该周期分量的长度尺度控制其平滑度是一个自由参数。
-为了使准确周期性的衰减，采用带有<code>RBF</code>内核的产品。
-该<code>RBF</code>组件的长度尺寸控制衰减时间，并且是另一个自由参数。
-&gt; - 较小的中期不规则性将由 <code>RationalQuadratic</code> 核来解释，
-<code>RationalQuadratic</code> 内核组件的长度尺度和 alpha
-参数决定长度尺度的扩散性。 根据<a
-target="_blank" rel="noopener" href="http://www.gaussianprocess.org/gpml/chapters/RW.pdf">RW2006</a>，这些不规则性可以更好地由
-<code>RationalQuadratic</code> 来解释， 而不是 <code>RBF</code>
-核，这可能是因为它可以容纳几个长度尺度。 &gt; - “noise(噪声)”
-一词，由一个 RBF
-内核贡献组成，它将解释相关的噪声分量，如局部天气现象以及
-<code>WhiteKernel</code> 对白噪声的贡献。
-相对幅度和<code>RBF</code>的长度尺度是进一步的自由参数。</p>
-<p>所得核函数为： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kernel=<span class="number">34.4</span>**<span class="number">2</span> * RBF(length_scale=<span class="number">41.8</span>)</span><br><span class="line">+ <span class="number">3.27</span>**<span class="number">2</span> * RBF(length_scale=<span class="number">180</span>) * ExpSineSquared(length_scale=<span class="number">1.44</span>,periodicity=<span class="number">1</span>)</span><br><span class="line">+ <span class="number">0.446</span>**<span class="number">2</span> * RationalQuadratic(alpha=<span class="number">17.7</span>, length_scale=<span class="number">0.957</span>)</span><br><span class="line">+ <span class="number">0.197</span>**<span class="number">2</span> * RBF(length_scale=<span class="number">0.138</span>) + WhiteKernel(noise_level=<span class="number">0.0336</span>)</span><br></pre></td></tr></table></figure></p>
-<h1 id="常用核函数">4 常用核函数</h1>
-<h2 id="常值核函数">4.1 常值核函数</h2>
-<p><span class="math inline">\({\displaystyle K_{\operatorname {C}
-}(x,x&#39;)=C}\)</span> ## 4.2 线性核函数</p>
-<p><span class="math inline">\({\displaystyle K_{\operatorname {L}
-}(x,x&#39;)=x^{T}x&#39;}\)</span></p>
-<h2 id="白噪声核函数">4.3 白噪声核函数</h2>
-<p><span class="math inline">\({\displaystyle K_{\operatorname {GN}
-}(x,x&#39;)=\sigma ^{2}\delta _{x,x&#39;} }\)</span> ## 4.4
-平方指数核函数（RBF）</p>
-<p><span class="math inline">\({\displaystyle K_{\operatorname {SE}
-}(x,x&#39;)=\exp {\Big (}-{\frac {\|d\|^{2} }{2\ell ^{2} } }{\Big )}
-}\)</span></p>
-<h2 id="奥恩斯坦-乌伦贝克过程">4.5 奥恩斯坦-乌伦贝克过程</h2>
-<p><span class="math inline">\({\displaystyle K_{\operatorname {OU}
-}(x,x&#39;)=\exp \left(-{\frac {|d|}{\ell } }\right)}\)</span></p>
-<h2 id="马特恩核函数">4.6 马特恩核函数</h2>
-<p><span class="math inline">\({\displaystyle K_{\operatorname {Matern}
-}(x,x&#39;)={\frac {2^{1-\nu } }{\Gamma (\nu )} }{\Big (}{\frac { {\sqrt
-{2\nu } }|d|}{\ell } }{\Big )}^{\nu }K_{\nu }{\Big (}{\frac { {\sqrt
-{2\nu } }|d|}{\ell } }{\Big )} }\)</span></p>
-<h2 id="周期核函数">4.7 周期核函数</h2>
-<p><span class="math inline">\({\displaystyle K_{\operatorname {P}
-}(x,x&#39;)=\exp \left(-{\frac {2\sin ^{2}\left({\frac {d}{2}
-}\right)}{\ell ^{2} } }\right)}\)</span></p>
-<h2 id="有理数平方核函数">4.8 有理数平方核函数</h2>
-<p><span class="math inline">\({\displaystyle K_{\operatorname {RQ}
-}(x,x&#39;)=(1+|d|^{2})^{-\alpha },\quad \alpha \geq 0}\)</span></p>
+    <h1 id="概率预测方法分类">1 概率预测方法分类</h1>
+<p>一般概率预测分为两种：</p>
+<ul>
+<li><p>其一是给出预测曲线的置信区间，如95%、85%置信区间等。</p></li>
+<li><p>另一种给出的是预测曲线点的概率密度函数，通过颜色的深浅表示。</p></li>
+</ul>
+<h1 id="常用概率预测方法记录">2 常用概率预测方法记录</h1>
+<h2 id="高斯过程">2.1 高斯过程</h2>
+<p>略</p>
+<h2 id="lstm叠加可以是经典时序预测方法">2.2
+LSTM叠加（可以是经典时序预测方法）</h2>
+<p>利用LSTM预测出估计值（均值），然后利用其他方法建立概率范围。</p>
+<h3 id="lstm多元贝叶斯不确定性处理器">2.2.1
+LSTM+多元贝叶斯不确定性处理器</h3>
+<p>（<strong>未理解</strong>）利用LSTM给出预测区间的散点图，再利用多元贝叶斯不确定性处理器给出置信区间。
+1.
+数据转换。使用元高斯策略将具有真实空间的观测和预测数据集转换为高斯数据。
+2. 确定先验密度和似然函数。还采用元高斯策略计算先验密度函数和似然函数。
+3. 确定后验密度函数。确定先验密度和似然函数后，相应地计算后验密度函数。
+4.
+概率预测。进行了蒙特卡罗模拟以创建概率预测。根据后验密度函数模拟了地平线m处观测的实现，并重复了K次蒙特卡罗模拟。</p>
+<p>论文（论文没有给出具体实现方法）：<a
+target="_blank" rel="noopener" href="https://www.sciencedirect.com/science/article/pii/S0022169420306247">Real-time
+probabilistic forecasting of river water quality under data missing
+situation: Deep learning plus post-processing techniques</a>。</p>
+<h3 id="lstm高斯混合模型">2.2.2 LSTM+高斯混合模型</h3>
+<p>GMM以规定置信水平下的置信区间的形式为概率预测提供了不确定性量化。</p>
+<ol type="1">
+<li><p>每个GMM由k个高斯分布组成，每个高斯分布被称为一个分量。将这些分量线性相加，形成GMM概率密度函数：<span
+class="math inline">\(p({x_i}) = \sum\limits_{k = 1}^K { {\pi
+_k}p({x_i}|k) = \sum\limits_{k = 1}^K { {\pi _k}N({x_i}|{\mu _k},{\Sigma
+_k})} }\)</span>，<span class="math inline">\({\pi
+_k}\)</span>为权重。</p></li>
+<li><p>EM算法：</p></li>
+<li><p>初始化参数</p></li>
+<li><p>计算后验概率（E-Step）：<span class="math inline">\({\varpi
+_i}(k) = \frac{ { {\pi _k}N({x_i}\left| { {u_k},} \right.{ {\rm{\Sigma }
+}_k})} } { {\mathop \sum \nolimits_{j = 1}^K {\pi _j}N({x_i}\left| {
+{u_j},} \right.{ {\rm{\Sigma } }_j})} }\)</span></p></li>
+<li><p>更新参数（M-Step）：<span class="math inline">\(\begin{array}
+{*{20} {c} }  { {\pi _k} = \frac{ { {N_k} } } {N} }\\  { {u_k} =
+\frac{1} { { {N_k} } }\mathop \sum \limits_{i = 1}^{ {N_k} } {\varpi
+_i}(k){x_i} }\\  { { {\rm{\Sigma } }_k} = \frac{1} { { {N_k} } }\mathop
+\sum \limits_{i = 1}^{ {N_k} } {\varpi _i}(k)({x_i} - {u_k}){ {({x_i} -
+{u_k})}^T} }  \end{array}\)</span></p></li>
+<li><p>迭代以上步骤，直至<span
+class="math inline">\(p({x_i})\)</span>收敛。</p></li>
+</ol>
+<p>论文：<a
+target="_blank" rel="noopener" href="https://www.sciencedirect.com/science/article/pii/S0306261919304532">Short-term
+forecasting and uncertainty analysis of wind turbine power based on long
+short-term memory network and Gaussian mixture model</a></p>
+<h2 id="梯度增强机">2.3 梯度增强机</h2>
+<p>论文：<a
+target="_blank" rel="noopener" href="https://www.sciencedirect.com/science/article/pii/S0169207016000145">Probabilistic
+gradient boosting machines for GEFCom2014 wind forecasting</a></p>
+<h2 id="改进深度混合密度模型">2.4 改进深度混合密度模型</h2>
+<p>论文：<a
+target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/abstract/document/8982039">Improved
+Deep Mixture Density Network for Regional Wind Power Probabilistic
+Forecasting</a></p>
+<p><img
+src="https://camo.githubusercontent.com/d4a5c1b7538914b0b7e01c6dafd691264f2804b8c87290a3ddf8ae895cf7593c/68747470733a2f2f6965656578706c6f72652e696565652e6f72672f6d6564696173746f72655f6e65772f494545452f636f6e74656e742f6d656469612f35392f393131393838302f383938323033392f7a68616e6731302d323937313630372d6c617267652e676966" /></p>
 
   </article>
   <!-- tag -->
@@ -312,16 +299,16 @@ target="_blank" rel="noopener" href="http://www.gaussianprocess.org/gpml/chapter
   <div class="flex justify-between mt-12 pt-6 border-t border-gray-200">
     <div>
       
-        <a href="/2023/03/03/%E6%A2%AF%E5%BA%A6%E5%A2%9E%E5%BC%BA%E7%AC%94%E8%AE%B0/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+        <a href="/2023/05/19/LSTM_pmodel/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
           <iconify-icon width="20" icon="ri:arrow-left-s-line" data-inline="false"></iconify-icon>
-          梯度增强笔记
+          LSTM+概率模型
         </a>
       
     </div>
     <div>
       
-        <a href="/2023/01/06/%E9%AB%98%E6%96%AF%E8%BF%87%E7%A8%8B%E5%9B%9E%E5%BD%92%E7%AC%94%E8%AE%B0/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
-          高斯过程回归笔记
+        <a href="/2023/04/05/seq2seq/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          多输入多输出深度学习时序预测模型
           <iconify-icon width="20" icon="ri:arrow-right-s-line" data-inline="false"></iconify-icon>
         </a>
       
@@ -450,6 +437,7 @@ target="_blank" rel="noopener" href="http://www.gaussianprocess.org/gpml/chapter
   <div class="flex items-center gap-2">
     <span>© 2023</span>
     <a href="https://github.com/ginnux" target="_blank" rel="noopener noreferrer">ginnux</a>
+    <span>Hong Kong, China</span>
   </div>
   <!-- powered by -->
   <div class="flex items-center gap-2">
