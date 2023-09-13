@@ -3,4 +3,4 @@
 \
 This is my blog powered by hexo. It mainly shows my notebooks about AI, ML, DL and Series forcasting. The server is located at Hong Kong, China. You can explore at high speed around the world.
 \
-地址/address：![ginnux.top](https://www.ginnux.top)
+地址/address：https://www.ginnux.top
